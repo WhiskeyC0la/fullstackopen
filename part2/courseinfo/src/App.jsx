@@ -1,11 +1,6 @@
-const Total = ({ parts }) => {
-  let sum = 0
-  for (let i = 0; i < parts.length; i++) {
-    sum += parts[i].exercises
-  }
-  return (
-    <p>total of {sum} exercises</p>
-  )
+const Total = ({parts}) => {
+  const total = parts.reduce((sum, part) => sum + part.exercises, 0)
+return <p>total of {total} exercises</p>
 }
 const Part = ({ part }) => {
   return(
