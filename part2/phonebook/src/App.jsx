@@ -7,12 +7,17 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const addPerson = (event) => {
     event.preventDefault()
-    if (newName !== '') {
-      const newPerson = {
-        name: newName
+    const normalizedName = newName.trim().toLowerCase()
+    if (normalizedName !== '') {
+      if (!persons.find(person => person.name.toLowerCase() === normalizedName)) {
+        const newPerson = {
+          name: newName.trim()
+        }
+        setPersons(persons.concat(newPerson))
+        setNewName('')
+      } else {
+        alert (`${newName.trim()} is already added to phonebook`)
       }
-      setPersons(persons.concat(newPerson))
-      setNewName('')
     }
   }
   const handleNameChange = (event) => {
