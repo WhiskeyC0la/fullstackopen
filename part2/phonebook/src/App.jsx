@@ -23,12 +23,14 @@ const App = () => {
       if (!persons.find(person => person.name.toLowerCase() === normalizedName)) {
         const newPerson = {
           name: newName.trim(),
-          number: newPhone.trim(),
-          id: persons.length + 1
+          number: newPhone.trim()
         }
-        setPersons(persons.concat(newPerson))
-        setNewName('')
-        setNewPhone('')
+        axios
+          .post('http://localhost:3001/persons', newPerson)
+          .then(response => {setPersons(persons.concat(response.data))
+            setNewName('')
+            setNewPhone('')
+          })
       } else {
         alert (`${newName.trim()} is already added to phonebook`)
       }
