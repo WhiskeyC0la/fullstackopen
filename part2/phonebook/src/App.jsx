@@ -20,7 +20,9 @@ const App = () => {
     event.preventDefault()
     const normalizedName = newName.trim().toLowerCase()
     if (normalizedName !== '' && newPhone !== '') {
-      if (!persons.find(person => person.name.toLowerCase() === normalizedName)) {
+      const findingResult = persons.find(person =>
+            person.name.trim().toLowerCase() === normalizedName)
+      if (!findingResult) {
         const newPerson = {
           name: newName.trim(),
           number: newPhone.trim()
@@ -33,7 +35,17 @@ const App = () => {
             setNewPhone('')
           })
       } else {
-        alert (`${newName.trim()} is already added to phonebook`)
+        if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+          const existingPerson = findingResult
+          const changedPerson = {...existingPerson, number: newPhone.trim()}
+          personService
+            .update(existingPerson.id, changedPerson)
+            .then(returnedPerson => {
+              setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
+              setNewName('')
+              setNewPhone('')
+            })
+        }
       }
     }
   }
