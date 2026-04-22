@@ -63,8 +63,16 @@ const App = () => {
                 setMessage(null)
               }, 5000)
             })
-            .catch(() => {
-              alert(`${existingPerson.name} wasn't updated`)
+            .catch((error) => {
+              console.log(error)
+              setMessageType('error')
+              setMessage(
+                `Information of ${existingPerson.name} has already been removed from server`
+              )
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
+              setPersons(persons.filter(person => person.id !== existingPerson.id))
             })
         }
       }
@@ -101,8 +109,18 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000)
-      }
-    )
+      })
+      .catch((error) => {
+        console.log(error)
+        setMessageType('error')
+        setMessage(
+          `Information of ${person.name} has already been removed from server`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setPersons(persons.filter(person => person.id !== id))
+      })
     }
   }
 
