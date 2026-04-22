@@ -3,13 +3,17 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState('')
+
+
   useEffect(() => {
     personService
       .getAll()
@@ -33,6 +37,13 @@ const App = () => {
             setPersons(persons.concat(returnedPerson))
             setNewName('')
             setNewPhone('')
+            setMessageType('success')
+            setMessage(
+              `Added ${returnedPerson.name}`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       } else {
         if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
@@ -44,6 +55,16 @@ const App = () => {
               setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
               setNewName('')
               setNewPhone('')
+              setMessageType('success')
+              setMessage(
+                `${returnedPerson.name}'s phone number was successfully updated`
+              )
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
+            })
+            .catch(() => {
+              alert(`${existingPerson.name} wasn't updated`)
             })
         }
       }
@@ -71,14 +92,24 @@ const App = () => {
     if(window.confirm(`Delete ${person.name}?`)) {
       personService
       .remove(id)
-      .then(() => setPersons(persons.filter(person => person.id !== id)))
-    } return
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+        setMessageType('success')
+        setMessage(
+          `${person.name} was successfully removed from phonebook`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      }
+    )
+    }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={message} type={messageType}/>
       <Filter value={newFilter} onChange={handleFilterChange} />
       
       <h3>Add a new</h3>
