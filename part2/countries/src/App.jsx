@@ -5,6 +5,7 @@ import CountriesList from './components/CountriesList.jsx'
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
 useEffect(() => {
   axios
@@ -16,6 +17,11 @@ useEffect(() => {
 
 const handleFilter = (event) => {
   setFilter(event.target.value)
+  setSelectedCountry(null)
+}
+
+const handleSelectedCountry = (country) => {
+  setSelectedCountry(country)
 }
 
 const filteredCountries = countries.filter(
@@ -28,7 +34,7 @@ const filteredCountries = countries.filter(
         find countries <input value={filter} onChange={handleFilter}/>
       </form>
       <div>
-        <CountriesList filteredCountries={filteredCountries} filter={filter}/>
+        <CountriesList filteredCountries={filteredCountries} filter={filter} selectedCountry={selectedCountry} handleSelectedCountry={handleSelectedCountry}/>
       </div>
     </div>
   )
