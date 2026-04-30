@@ -1,3 +1,5 @@
+import Weather from './Weather.jsx'
+
 const Country = ({ country }) => {
     return (
         <div>
@@ -6,6 +8,7 @@ const Country = ({ country }) => {
             </h2>
             <p>Capital {country.capital[0]} </p>
             <p>Area {country.area} </p>
+            <p>Population {country.population}</p>
             <h3>
               Languages
             </h3>
@@ -18,7 +21,10 @@ const Country = ({ country }) => {
               country.flags.alt
               || `Flag of ${country.name.common}`
             }/>
-          </div>
+            <div>
+              <Weather country={country} />
+            </div>
+        </div>
     )
 }
 export default Country
