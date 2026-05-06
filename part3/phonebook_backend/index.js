@@ -60,6 +60,17 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
+    
+    if(!body.name || !body.number) {
+        return response.status(400).json({error: 'Important information is missing'})
+    }
+
+    const existingPerson = persons.find(person => person.name.toLowerCase() === body.name.toLowerCase())
+
+    if(existingPerson) {
+        return response.status(409).json({error: 'Name must be unique'})
+    } 
+
     const generateId = () => {
         const id = Math.floor(Math.random()* 1000)
         return String(id)
