@@ -49,10 +49,10 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const person = persons.find(person => person.id === id)
-    
-    if(person) {
-        persons = persons.filter(person => person.id !== id)
+    const originLength = persons.length
+    persons = persons.filter(person => person.id !== id)
+
+    if(originLength > persons.length) {
         return response.status(204).end()
     }
     return response.status(404).end()
