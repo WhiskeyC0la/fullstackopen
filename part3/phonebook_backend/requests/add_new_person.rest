@@ -1,4 +1,14 @@
+### LOCAL POST
 POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Jack Flow",
+    "number": "345-987987"
+}
+
+### RENDER POST
+POST https://phonebook-backend-mazr.onrender.com/api/persons
 Content-Type: application/json
 
 {

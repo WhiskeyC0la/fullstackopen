@@ -1,1 +1,5 @@
+### LOCAL DELETE
 DELETE http://localhost:3001/api/persons/3
+
+### RENDER DELETE
+DELETE https://phonebook-backend-mazr.onrender.com/api/persons/3
