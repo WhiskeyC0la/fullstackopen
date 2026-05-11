@@ -1,0 +1,5 @@
+###LOCAL GET ALL
+GET http://localhost:3001/api/persons
+
+### RENDER GET ALL
+DELETE https://phonebook-backend-mazr.onrender.com/api/persons

@@ -1,0 +1,5 @@
+###LOCAL GET BY ID
+GET http://localhost:3001/api/persons/PASTE_ID_HERE
+
+### RENDER GET BY ID
+DELETE https://phonebook-backend-mazr.onrender.com/api/persons/PASTE_ID_HERE
