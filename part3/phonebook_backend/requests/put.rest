@@ -1,0 +1,8 @@
+###LOCAL PUT
+PUT http://localhost:3001/api/persons/PASTE_ID_HERE
+Content-Type: application/json
+
+{
+    "name": "Jack Flow",
+    "number": "number here"
+}

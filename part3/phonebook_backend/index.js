@@ -31,7 +31,7 @@ app.get('/info', (request, response) => {
         })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
         .then(person => {
             if(!person) {
@@ -40,9 +40,10 @@ app.get('/api/persons/:id', (request, response) => {
             }
             response.json(person)
         })
+        .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id)
         .then(deletedPerson => {
             if(!deletedPerson) {
@@ -50,13 +51,17 @@ app.delete('/api/persons/:id', (request, response) => {
             }
             response.status(204).end()
         })
+        .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
     
     if(!body.name || !body.number) {
         return response.status(400).json({error: 'Important information is missing'})
+    }
+    if(!body.number || !/^[+\d-]*$/.test(body.number)) {
+        return response.status(400).json({ error: '400 number is missing or malformed'})
     }
 
     Person.find({ name: body.name })
@@ -64,6 +69,7 @@ app.post('/api/persons', (request, response) => {
             if(existingPerson.length > 0) {
                 return response.status(409).json({error: 'Name must be unique'})
             }
+
             const person = new Person({
                 name: body.name,
                 number: body.number
@@ -73,7 +79,47 @@ app.post('/api/persons', (request, response) => {
                 response.status(201).json(savedPerson)
             })
         })
+        .catch(error => next(error))
 })
+
+app.put('/api/persons/:id',(request, response, next) => {
+    const { number } = request.body
+
+    Person.findById(request.params.id)
+        .then(person => {
+            if(!person) {
+                return response.status(404).json({ error: '404 Not found'})
+            }
+            if(!number || !/^[+\d-]*$/.test(number)) {
+                return response.status(400).json({ error: '400 number is missing or malformed'})
+            }
+
+            person.number = number
+
+            return person.save()
+                .then(returnedPerson => {
+                    response.json(returnedPerson)
+                })
+        })
+        .catch(error => next(error))
+})
+
+const unknownEndpoint = ((request, response) => {
+    response.status(404).json({ error: '404 unknown endpoint'})
+})
+
+app.use(unknownEndpoint)
+
+const errorHandler = ((error, request, response, next) => {
+    console.error(error.message)
+
+    if(error.name === 'CastError') {
+        return response.status(400).json({ error: 'malformed id'})
+    }
+    next(error)
+})
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
