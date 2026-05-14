@@ -56,13 +56,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
-    
-    if(!body.name || !body.number) {
-        return response.status(400).json({error: 'Important information is missing'})
-    }
-    if(!body.number || !/^[+\d-]*$/.test(body.number)) {
-        return response.status(400).json({ error: '400 number is missing or malformed'})
-    }
 
     Person.find({ name: body.name })
         .then(existingPerson => {
@@ -75,7 +68,7 @@ app.post('/api/persons', (request, response, next) => {
                 number: body.number
             })
 
-            person.save().then(savedPerson => {
+            return person.save().then(savedPerson => {
                 response.status(201).json(savedPerson)
             })
         })
@@ -89,9 +82,6 @@ app.put('/api/persons/:id',(request, response, next) => {
         .then(person => {
             if(!person) {
                 return response.status(404).json({ error: '404 Not found'})
-            }
-            if(!number || !/^[+\d-]*$/.test(number)) {
-                return response.status(400).json({ error: '400 number is missing or malformed'})
             }
 
             person.number = number
@@ -115,6 +105,8 @@ const errorHandler = ((error, request, response, next) => {
 
     if(error.name === 'CastError') {
         return response.status(400).json({ error: 'malformed id'})
+    } else if(error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message})
     }
     next(error)
 })

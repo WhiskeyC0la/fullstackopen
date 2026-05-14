@@ -45,6 +45,13 @@ const App = () => {
               setMessage(null)
             }, 5000)
           })
+          .catch(error => {
+            setMessageType('error')
+            setMessage(error.response?.data?.error || 'Something went wrong')
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
       } else {
         if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
           const existingPerson = findingResult
@@ -66,13 +73,18 @@ const App = () => {
             .catch((error) => {
               console.log(error)
               setMessageType('error')
-              setMessage(
+              const errorMessage = error.response?.data?.error
+
+              setMessage(errorMessage ||
                 `Information of ${existingPerson.name} has already been removed from server`
               )
               setTimeout(() => {
                 setMessage(null)
               }, 5000)
+              
+              if(!errorMessage) {
               setPersons(persons.filter(person => person.id !== existingPerson.id))
+              }
             })
         }
       }
