@@ -1,6 +1,6 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert/strict')
-const { totalLikes, favoriteBlog, mostBlogs } = require('../utils/list_helper')
+const { totalLikes, favoriteBlog, mostBlogs, mostLikes } = require('../utils/list_helper')
 const blogs = require('./test_blogs')
 
 describe('total likes', () => {
@@ -73,6 +73,35 @@ describe('most blogs author', () => {
       {
         author: 'Robert C. Martin',
         blogs: 3
+      })
+  })
+})
+
+describe('author with most likes', () => {
+  test('of empty list', () => {
+    assert.deepStrictEqual(mostLikes([]), {})
+  })
+  test('of list with one author', () => {
+    const listWithOneBlog = [
+      {
+        _id: '5a422a851b54a676234d17f7',
+        title: 'React patterns',
+        author: 'Michael Chan',
+        url: 'https://reactpatterns.com/',
+        likes: 7,
+        __v: 0
+      }
+    ]
+    assert.deepStrictEqual(mostLikes(listWithOneBlog),   {
+      author: 'Michael Chan',
+      likes: 7
+    })
+  })
+  test('of bigger list', () => {
+    assert.deepStrictEqual(mostLikes(blogs),
+      {
+        author: 'Edsger W. Dijkstra',
+        likes: 17
       })
   })
 })
