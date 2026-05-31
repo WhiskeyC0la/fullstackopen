@@ -55,6 +55,23 @@ test('a new blog can be added', async () => {
   assert(blogTitles.includes(newBlog.title))
 })
 
+test('POST without likes field set by default zero', async () => {
+  const newBlogWithoutLikes = {
+    title: 'Blog without likes',
+    author: 'Test Author',
+    url: 'http://test.example'
+  }
+
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlogWithoutLikes)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  const blogsAtEnd = await blogsInDb()
+  const recentlySavedBlog = blogsAtEnd.find(blog => blog.id === result.body.id)
+  assert.strictEqual(recentlySavedBlog?.likes, 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
