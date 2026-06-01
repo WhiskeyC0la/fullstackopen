@@ -101,6 +101,46 @@ describe('POST /api/blogs', () => {
   })
 })
 
+describe('DELETE /api/blogs/:id', () => {
+  test('success with 204 if id is valid', async () => {
+    const blogsAtStart = await blogsInDb()
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await blogsInDb()
+    const ids = blogsAtEnd.map(blog => blog.id)
+
+    assert(!ids.includes(blogToDelete.id))
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+  })
+
+  test('fail with 400 if id isn\'t valid', async () => {
+    const blogsAtStart = await blogsInDb()
+
+    await api
+      .delete('/api/blogs/123')
+      .expect(400)
+
+    const blogsAtEnd = await blogsInDb()
+    assert.strictEqual(blogsAtStart.length, blogsAtEnd.length)
+  })
+
+  test('fail with 404 if id is valid but not found', async () => {
+    const blogsAtStart = await blogsInDb()
+    const blogToDeleteId = blogsAtStart[0].id.replace(/\d/g, '1')
+
+    await api
+      .delete(`/api/blogs/${blogToDeleteId}`)
+      .expect(404)
+
+    const blogsAtEnd = await blogsInDb()
+    assert.strictEqual(blogsAtStart.length, blogsAtEnd.length)
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
