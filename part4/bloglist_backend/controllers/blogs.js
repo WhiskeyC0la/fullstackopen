@@ -31,7 +31,29 @@ blogsRouter.delete('/:id', async (request, response) => {
     console.error(error.message)
     if(error.name === 'CastError') {
       return response.status(400).json({ error: error.message })
-    } else return response.status(404).json({ error: error.message })
+    } else return response.status(500).json({ error: error.message })
+  }
+})
+
+blogsRouter.put('/:id', async (request, response) => {
+  try{
+    const { likes } = request.body
+    const blogToUpdate = await Blog.findById(request.params.id)
+
+    if(!blogToUpdate) {
+      return response.status(404).end()
+    }
+
+    blogToUpdate.likes = likes
+
+    const updatedBlog = await blogToUpdate.save()
+    return response.status(200).json(updatedBlog)
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return response.status(400).json({ error: error.message })
+    } else if (error.name === 'ValidationError'){
+      return response.status(400).json({ error: error.message })
+    } else return response.status(500).json({ error: error.message })
   }
 })
 

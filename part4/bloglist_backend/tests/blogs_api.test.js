@@ -141,6 +141,25 @@ describe('DELETE /api/blogs/:id', () => {
   })
 })
 
+describe('PUT /api/blogs/:id', () => {
+  test('updating the blog\'s likes', async () => {
+    const blogsAtStart = await blogsInDb()
+    const blogToUpdateId = blogsAtStart[0].id
+    const blogToUpdateLikes = blogsAtStart[0].likes
+    const updatedLikes = blogToUpdateLikes + 5
+
+    await api
+      .put(`/api/blogs/${blogToUpdateId}`)
+      .send({ likes: updatedLikes })
+      .expect(200)
+
+    const blogsAtEnd = await blogsInDb()
+    const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdateId)
+
+    assert.strictEqual(updatedBlog.likes, updatedLikes)
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
