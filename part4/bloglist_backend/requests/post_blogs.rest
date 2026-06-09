@@ -12,7 +12,7 @@ Content-Type: application/json
 ### LOCAL POST #2 WITH TOKEN
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphY2tmbG93IiwiaWQiOiI2YTI4MzZlYWVhYmVlZWUzNDJjYmFiYzIiLCJpYXQiOjE3ODEwMjA0Mjd9.DRNqS58mUcbmYudbCJWZ7SwVmYUrAEnhnkCcwCm_Bbs
+Authorization: Bearer TOKEN_HERE
 
 {
   "title": "Express middleware explained",
@@ -24,7 +24,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphY
 ### LOCAL POST #3 SECOND USER WITH TOKEN
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNlY29uZG9uZSIsImlkIjoiNmEyODUxY2VhM2ViOTVmYzllZWM4YTE1IiwiaWF0IjoxNzgxMDI3MzUwfQ.Iv6bvYegps4D3E0c7eG2t14DV_Wc3wDQhKhwTIt33-g
+Authorization: Bearer TOKEN_HERE
 
 {
   "title": "Second users blog",

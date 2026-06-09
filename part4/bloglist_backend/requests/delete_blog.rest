@@ -1,11 +1,11 @@
 ### LOCAL BLOG DELETE
-DELETE http://localhost:3003/api/blogs/6a28588ac6021c6436beaa80
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphY2tmbG93IiwiaWQiOiI2YTI4MzZlYWVhYmVlZWUzNDJjYmFiYzIiLCJpYXQiOjE3ODEwMjA0Mjd9.DRNqS58mUcbmYudbCJWZ7SwVmYUrAEnhnkCcwCm_Bbs
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE
 
 ### LOCAL BLOG(INCORRECT BLOG ID) DELETE
-DELETE http://localhost:3003/api/blogs/6a28588ac6021c6436beaa88
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphY2tmbG93IiwiaWQiOiI2YTI4MzZlYWVhYmVlZWUzNDJjYmFiYzIiLCJpYXQiOjE3ODEwMjA0Mjd9.DRNqS58mUcbmYudbCJWZ7SwVmYUrAEnhnkCcwCm_Bbs
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE
 
 ### LOCAL BLOG(WRONG) DELETE WITH VALID TOKEN
-DELETE http://localhost:3003/api/blogs/6a285263a3eb95fc9eec8a16
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphY2tmbG93IiwiaWQiOiI2YTI4MzZlYWVhYmVlZWUzNDJjYmFiYzIiLCJpYXQiOjE3ODEwMjA0Mjd9.DRNqS58mUcbmYudbCJWZ7SwVmYUrAEnhnkCcwCm_Bbs
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE
