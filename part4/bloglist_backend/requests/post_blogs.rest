@@ -1,3 +1,4 @@
+### LOCAL POST #1
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
@@ -5,5 +6,18 @@ Content-Type: application/json
   "title": "Why backend architecture matters",
   "author": "Full Stack Open Student",
   "url": "https://fullstackopen.com/en/part4",
-  "likes": 7
+  "likes": 7,
+  "user": "6a269fb8206124aca3327653"
+}
+
+### LOCAL POST #2
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Express middleware explained",
+  "author": "Node Developer",
+  "url": "https://expressjs.com/en/guide/using-middleware.html",
+  "likes": 21,
+  "user": "6a269fb8206124aca3327653"
 }
