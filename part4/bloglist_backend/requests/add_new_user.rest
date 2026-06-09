@@ -7,3 +7,13 @@ Content-Type: application/json
     "name": "Jack Flow",
     "password": "345-987987"
 }
+
+### LOCAL POST #2
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "secondone",
+    "name": "John Doe",
+    "password": "confidential"
+}
