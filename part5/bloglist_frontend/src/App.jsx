@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -20,18 +20,17 @@ const App = () => {
     if(loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
-  const handleLogin = async event => {
-    event.preventDefault()
-
+  const handleLogin = async credentials => {
+  
     try {
-      const user = await loginService.login({ username, password })
+      const user = await loginService.login(credentials)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (error) {
       console.log(error.message)
     }
@@ -40,39 +39,23 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    blogService.setToken(null)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label>
-          username
-          <input
-            type='text'
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type='password'
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type='submit'>login</button>
-    </form>
-  )
+  const addBlog = async newBlog => {
+    try {
+      const createdBlog = await blogService.create(newBlog)
+      setBlogs(blogs.concat(createdBlog))
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
 
   if(!user) {
     return (
       <div>
         <h2>Log in to application</h2>
-        {loginForm()}
+        <LoginForm handleLogin={handleLogin}/>
       </div>
     )
   }
@@ -80,12 +63,13 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-        <p>{user.name} logged in
+        <p>
+          {user.name} logged in
           <button onClick={handleLogout}>logout</button>
         </p>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
+      <h2>create new</h2>
+      <BlogForm addBlog={addBlog} />
+      {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
     </div>
   )
 }
