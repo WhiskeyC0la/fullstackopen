@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -44,11 +46,12 @@ const App = () => {
   }
 
   const handleLogout = () => {
+    const name = user.name
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
     setMessageType('success')
-    setMessage(`${user.name} successfully logged out`)
+    setMessage(`${name} successfully logged out`)
     setTimeout(() => {
       setMessage(null)
     }, 5000)
@@ -60,6 +63,7 @@ const App = () => {
       if(!result) {
         const createdBlog = await blogService.create(newBlog)
         setBlogs(blogs.concat(createdBlog))
+        blogFormRef.current.hide()
         setMessageType('success')
         setMessage(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
         setTimeout(() => {
@@ -99,8 +103,10 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-      <h2>create new</h2>
-      <BlogForm addBlog={addBlog} />
+      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+        <h2>create new</h2>
+        <BlogForm addBlog={addBlog} />
+      </Togglable>
       {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
     </div>
   )
