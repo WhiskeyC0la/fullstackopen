@@ -160,7 +160,7 @@ const App = () => {
         <h2>create new</h2>
         <BlogForm addBlog={addBlog} />
       </Togglable>
-      {sortedBlogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog}/>)}
+      {sortedBlogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user}/>)}
     </div>
   )
 }
