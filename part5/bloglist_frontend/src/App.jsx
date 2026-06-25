@@ -85,6 +85,35 @@ const App = () => {
     }
   }
 
+  const updateLikes = async (id) => {
+    try {
+      const result = blogs.find(blog => blog.id === id)
+
+      const blogToUpdate = {
+        title: result.title,
+        author: result.author,
+        url: result.url,
+        likes: result.likes + 1,
+        user: result.user
+      }
+      
+      await blogService.update(id, blogToUpdate)
+      const blogsAfterUpdate = await blogService.getAll()
+      setBlogs(blogsAfterUpdate)
+      setMessageType('success')
+      setMessage(`likes for ${result.title} by ${result.author} were successfully updated`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    } catch (error) {
+      setMessageType('error')
+      setMessage(error.response?.data?.error || 'something went wrong')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
+  }
+
   if(!user) {
     return (
       <div>
@@ -107,7 +136,7 @@ const App = () => {
         <h2>create new</h2>
         <BlogForm addBlog={addBlog} />
       </Togglable>
-      {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+      {blogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} />)}
     </div>
   )
 }
