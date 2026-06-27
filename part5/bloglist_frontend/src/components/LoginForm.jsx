@@ -4,7 +4,7 @@ import { useState } from 'react'
 const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  
+
   const handleSubmit = async event => {
     event.preventDefault()
 
@@ -15,7 +15,7 @@ const LoginForm = ({ handleLogin }) => {
     setUsername('')
     setPassword('')
   }
-  
+
   const handleUsername = event => {
     setUsername(event.target.value)
   }
@@ -25,29 +25,29 @@ const LoginForm = ({ handleLogin }) => {
   }
 
   return (
-  <form onSubmit={handleSubmit}>
-    <div>
-      <label>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>
         username
-        <input
-          type='text'
-          value={username}
-          onChange={handleUsername}
-        />
-      </label>
-    </div>
-    <div>
-      <label>
+          <input
+            type='text'
+            value={username}
+            onChange={handleUsername}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
         password
-        <input
-          type='password'
-          value={password}
-          onChange={handlePassword}
-        />
-      </label>
-    </div>
-    <button type='submit'>login</button>
-  </form>
+          <input
+            type='password'
+            value={password}
+            onChange={handlePassword}
+          />
+        </label>
+      </div>
+      <button type='submit'>login</button>
+    </form>
   )
 }
 

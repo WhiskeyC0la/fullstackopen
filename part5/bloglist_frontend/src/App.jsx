@@ -30,7 +30,7 @@ const App = () => {
   }, [])
 
   const handleLogin = async credentials => {
-  
+
     try {
       const user = await loginService.login(credentials)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
@@ -96,7 +96,7 @@ const App = () => {
         likes: result.likes + 1,
         user: result.user
       }
-      
+
       await blogService.update(id, blogToUpdate)
       const blogsAfterUpdate = await blogService.getAll()
       setBlogs(blogsAfterUpdate)
@@ -117,11 +117,11 @@ const App = () => {
   const deleteBlog = async (id) => {
     try{
       const blogToDelete = blogs.find(blog => blog.id === id)
-      
+
       if(window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}?`)) {
         await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id !== id))
-        setMessageType('success') 
+        setMessageType('success')
         setMessage(`Blog ${blogToDelete.title} by ${blogToDelete.author} was successfully removed`)
         setTimeout(() => {
           setMessage(null)
