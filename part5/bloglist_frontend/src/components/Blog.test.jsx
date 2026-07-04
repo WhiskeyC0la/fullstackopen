@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
+  let updateLikesMock
   beforeEach(() => {
     const blog = {
       title: 'Test content',
@@ -20,7 +21,9 @@ describe('<Blog />', () => {
       username: 'tester'
     }
 
-    render(<Blog blog={blog} user={user}/>)
+    updateLikesMock = vi.fn()
+
+    render(<Blog blog={blog} user={user} updateLikes={updateLikesMock}/>)
   })
 
   test('component renders title and author only', () => {
@@ -52,5 +55,20 @@ describe('<Blog />', () => {
       expect(blogUrl).toBeVisible()
       expect(blogLikes).toBeVisible()
       expect(blogUser).toBeVisible()
+    })
+
+  test('clicking like button twice calls event handler twice',
+    async () => {
+
+      const tester = userEvent.setup()
+
+      const viewButton = screen.getByText('view')
+      await tester.click(viewButton)
+
+      const likeButton = screen.getByText('like')
+      await tester.click(likeButton)
+      await tester.click(likeButton)
+
+      expect(updateLikesMock.mock.calls).toHaveLength(2)
     })
 })
