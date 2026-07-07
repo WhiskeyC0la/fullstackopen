@@ -42,13 +42,22 @@ describe('Blog app', () => {
         await loginWith(page, 'jackflow', '345-987987')
       })
       test('a new blog can be created', async ({ page }) => {
-        await page.getByRole('button', { name: 'create new blog' }).click()
         await createBlog(page, 'New blog with Playwright', 'Test Author', 'https://example.com')
-        await page.getByRole('button', { name: 'create' }).click()
-
+        
         await expect(page.getByText('New blog with Playwright Test Author')).toBeVisible()
         //alternative solution with .locator()
         //await expect(page.getByRole('button', { name: 'view' }).locator('..').filter({ hasText: 'New blog with Playwright' })).toBeVisible()
+      })
+      test('can like the blog', async ({ page }) => {
+        await createBlog(page, 'New blog with Playwright', 'Test Author', 'https://example.com')
+        const blog = page.getByText('New blog with Playwright Test Author').locator('..')
+        await blog.getByRole('button', { name: 'view' }).click()
+        await expect(blog.getByRole('button', { name: 'hide' })).toBeVisible()
+        await expect(blog.getByText('likes 0')).toBeVisible()
+        await blog.getByRole('button', { name: 'like' }).click()
+        await expect(blog.getByText('likes 1')).toBeVisible()
+        await expect(page.locator('.success'))
+          .toContainText('likes for New blog with Playwright by Test Author were successfully updated')
       })
     })
   })
