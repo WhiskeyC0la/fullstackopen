@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -19,7 +19,7 @@ describe('Blog app', () => {
     await expect(page.getByText('Log in to application')).toBeVisible()
     await expect(page.getByLabel('username')).toBeVisible()
     await expect(page.getByLabel('password')).toBeVisible()
-    await expect(page.getByRole('button', {name: 'login'})).toBeVisible()
+    await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
   })
 
   describe('Login', () => {
@@ -36,6 +36,20 @@ describe('Blog app', () => {
         await expect(page.locator('.error')).toContainText('invalid username or password')
         await expect(page.getByText('Jack Flow logged in')).not.toBeVisible()
         await expect(page.getByRole('button', { name: 'login'})).toBeVisible()
+    })
+    describe('When logged in', () => {
+      beforeEach(async ({ page }) => {
+        await loginWith(page, 'jackflow', '345-987987')
+      })
+      test('a new blog can be created', async ({ page }) => {
+        await page.getByRole('button', { name: 'create new blog' }).click()
+        await createBlog(page, 'New blog with Playwright', 'Test Author', 'https://example.com')
+        await page.getByRole('button', { name: 'create' }).click()
+
+        await expect(page.getByText('New blog with Playwright Test Author')).toBeVisible()
+        //alternative solution with .locator()
+        //await expect(page.getByRole('button', { name: 'view' }).locator('..').filter({ hasText: 'New blog with Playwright' })).toBeVisible()
+      })
     })
   })
 })
