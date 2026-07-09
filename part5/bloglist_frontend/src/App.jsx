@@ -62,7 +62,11 @@ const App = () => {
       const result = blogs.find(blog => blog.title === newBlog.title && blog.author === newBlog.author)
       if(!result) {
         const createdBlog = await blogService.create(newBlog)
-        setBlogs(blogs.concat(createdBlog))
+        const blogWithUser = {
+          ...createdBlog,
+          user: user
+        }
+        setBlogs(blogs.concat(blogWithUser))
         blogFormRef.current.hide()
         setMessageType('success')
         setMessage(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
@@ -101,7 +105,7 @@ const App = () => {
       const blogsAfterUpdate = await blogService.getAll()
       setBlogs(blogsAfterUpdate)
       setMessageType('success')
-      setMessage(`likes for ${result.title} by ${result.author} were successfully updated`)
+      setMessage(`likes for "${result.title}" by ${result.author} were successfully updated`)
       setTimeout(() => {
         setMessage(null)
       }, 5000)
@@ -122,7 +126,7 @@ const App = () => {
         await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id !== id))
         setMessageType('success')
-        setMessage(`Blog ${blogToDelete.title} by ${blogToDelete.author} was successfully removed`)
+        setMessage(`Blog "${blogToDelete.title}" by ${blogToDelete.author} was successfully removed`)
         setTimeout(() => {
           setMessage(null)
         }, 5000)
