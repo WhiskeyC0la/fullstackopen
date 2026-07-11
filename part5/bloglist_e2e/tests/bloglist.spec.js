@@ -102,6 +102,44 @@ describe('Blog app', () => {
           await blogBySecondUser.getByRole('button', { name: 'view' }).click()
           await expect(blogBySecondUser.getByRole('button', { name: 'remove' })).toBeVisible()
       })
+      test('blogs are ordered by number of likes',
+        async({ page, request }) => {
+          const newUser = {
+            name: 'John Doe',
+            username: 'secondOne',
+            password: 'confidential'
+          }
+          const newBlog = {
+            title: 'Another blog with Playwright',
+            author: 'Test User',
+            url: 'https://example.com'
+          }
+          await request.post('http://localhost:3003/api/users', {
+            data: newUser
+          })
+
+          await page.getByRole('button', { name: 'logout' }).click()
+          await expectLoginFormToBeVisible(page)
+          await loginWith(page, newUser.username, newUser.password)
+          await createBlog(page, newBlog.title, newBlog.author, newBlog.url)
+
+          const blogByFirstUser = page.getByText('New blog with Playwright Test Author').locator('..')
+          const blogBySecondUser = page.getByText(`${newBlog.title} ${newBlog.author}`).locator('..')
+
+          await blogByFirstUser.getByRole('button', { name: 'view' }).click()
+          for(let i = 1; i <= 3; i ++) {
+            await blogByFirstUser.getByRole('button', { name: 'like' }).click()
+            await expect(blogByFirstUser.getByText(`likes ${i}`)).toBeVisible()
+          }
+          await blogBySecondUser.getByRole('button', { name: 'view' }).click()
+          for(let i = 1; i <= 5; i ++) {
+            await blogBySecondUser.getByRole('button', { name: 'like' }).click()
+            await expect(blogBySecondUser.getByText(`likes ${i}`)).toBeVisible()
+          }
+          
+          await expect(page.getByRole('button', { name: 'hide' }).locator('..').first()).toContainText(`${newBlog.title} ${newBlog.author}`)
+          await expect(page.getByRole('button', { name: 'hide' }).locator('..').last()).toContainText('New blog with Playwright Test Author')
+      })
     })
   })
 })
