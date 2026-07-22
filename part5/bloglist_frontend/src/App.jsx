@@ -6,6 +6,13 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useNavigate
+} from 'react-router-dom'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,6 +20,7 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
   const blogFormRef = useRef()
+  const navigate = useNavigate()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -36,6 +44,7 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
+      navigate('/')
     } catch (error) {
       setMessageType('error')
       setMessage(error.response?.data?.error)
@@ -50,6 +59,7 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
+    navigate('/')
     setMessageType('success')
     setMessage(`${name} successfully logged out`)
     setTimeout(() => {
@@ -142,29 +152,47 @@ const App = () => {
 
   const sortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes)
 
-  if(!user) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification message={message} type={messageType} />
-        <LoginForm handleLogin={handleLogin}/>
-      </div>
-    )
+  const padding = {
+    padding:5
   }
 
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification message={message} type={messageType} />
-      <p>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </p>
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <h2>create new</h2>
-        <BlogForm addBlog={addBlog} />
-      </Togglable>
-      {sortedBlogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user}/>)}
+      <div>
+        <Link style={padding} to='/'>blogs</Link>
+        {user === null
+          ?  <Link style={padding} to='/login'>login</Link>
+          : (
+            <>
+              <span style={padding}>{user.name} logged in</span>
+              <button onClick={handleLogout}>logout</button>
+            </>
+          )
+        }
+      </div>
+
+      <Routes>
+        <Route path='/' element={
+          <div>
+            <h2>blogs</h2>
+            <Notification message={message} type={messageType}/>
+            {sortedBlogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />)}
+          </div>
+        }
+        />
+        <Route path='/login' element={
+          user === null
+            ? (
+              <div>
+                <h2>Log in to application</h2>
+                <Notification message={message} type={messageType} />
+                <LoginForm handleLogin={handleLogin}/>
+              </div>
+            )
+            : <Navigate to='/' replace/>
+        }
+        />
+      </Routes>
     </div>
   )
 }
