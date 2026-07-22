@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -20,7 +20,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
-  const blogFormRef = useRef()
+  const [authChecked, setAuthChecked] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -36,6 +36,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
+    setAuthChecked(true)
   }, [])
 
   const handleLogin = async credentials => {
@@ -78,7 +79,7 @@ const App = () => {
           user: user
         }
         setBlogs(blogs.concat(blogWithUser))
-        blogFormRef.current.hide()
+        navigate('/')
         setMessageType('success')
         setMessage(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
         setTimeout(() => {
@@ -136,6 +137,7 @@ const App = () => {
       if(window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}?`)) {
         await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id !== id))
+        navigate('/')
         setMessageType('success')
         setMessage(`Blog "${blogToDelete.title}" by ${blogToDelete.author} was successfully removed`)
         setTimeout(() => {
@@ -162,10 +164,17 @@ const App = () => {
     ? blogs.find(blog => blog.id === match.params.id)
     : null
 
+  if(!authChecked) {
+    return null
+  }
+
   return (
     <div>
       <div>
         <Link style={padding} to='/'>blogs</Link>
+        {user !== null
+          ? <Link style={padding} to='/create'>new blog</Link>
+          : null}
         {user === null
           ?  <Link style={padding} to='/login'>login</Link>
           : (
@@ -207,7 +216,22 @@ const App = () => {
         }
         />
         <Route path='/blogs/:id' element={
-          <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
+          <div>
+            <Notification message={message} type={messageType} />
+            <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
+          </div>
+        }
+        />
+        <Route path='/create' element={
+          user !== null
+            ? (
+              <div>
+                <h2>create new</h2>
+                <Notification message={message} type={messageType} />
+                <BlogForm addBlog={addBlog} />
+              </div>
+            )
+            : <Navigate to='/login' replace />
         }
         />
       </Routes>
