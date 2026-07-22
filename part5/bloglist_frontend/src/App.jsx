@@ -5,13 +5,14 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+
 import {
   Routes,
   Route,
   Link,
   Navigate,
-  useNavigate
+  useNavigate,
+  useMatch
 } from 'react-router-dom'
 
 const App = () => {
@@ -156,6 +157,11 @@ const App = () => {
     padding:5
   }
 
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
+
   return (
     <div>
       <div>
@@ -176,7 +182,15 @@ const App = () => {
           <div>
             <h2>blogs</h2>
             <Notification message={message} type={messageType}/>
-            {sortedBlogs.map(blog => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />)}
+            <ul>
+              {sortedBlogs.map(blog => (
+                <li key={blog.id}>
+                  <Link style={padding} to={`/blogs/${blog.id}`}>
+                    {`${blog.title} by ${blog.author}`}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         }
         />
@@ -190,6 +204,10 @@ const App = () => {
               </div>
             )
             : <Navigate to='/' replace/>
+        }
+        />
+        <Route path='/blogs/:id' element={
+          <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
         }
         />
       </Routes>
