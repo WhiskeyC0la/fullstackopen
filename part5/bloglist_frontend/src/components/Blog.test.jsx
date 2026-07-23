@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
-  let updateLikesMock
+  let blog
   beforeEach(() => {
-    const blog = {
+    blog = {
       title: 'Test content',
       author: 'Test Author',
       url: 'https://example.com',
@@ -15,60 +14,55 @@ describe('<Blog />', () => {
         username: 'tester'
       }
     }
-
-    const user = {
-      name: 'Test User',
-      username: 'tester'
-    }
-
-    updateLikesMock = vi.fn()
-
-    render(<Blog blog={blog} user={user} updateLikes={updateLikesMock}/>)
   })
 
-  test('component renders title and author only', () => {
+  test('renders blog information and no buttons for unauthenticated user', () => {
+    render(<Blog blog={blog}/>)
 
     const blogTitle = screen.getByText('Test content', { exact: false })
     const blogAuthor = screen.getByText('Test Author', { exact: false })
     const blogUrl = screen.getByText('https://example.com')
     const blogLikes = screen.getByText('likes 5', { exact: false })
     const blogUser = screen.getByText('Test User', { exact: false })
+    const likeButton = screen.queryByRole('button', { name: /like/i })
+    const removeButton = screen.queryByRole('button', { name: /remove/i })
 
     expect(blogTitle).toBeVisible()
     expect(blogAuthor).toBeVisible()
-    expect(blogUrl).not.toBeVisible()
-    expect(blogLikes).not.toBeVisible()
-    expect(blogUser).not.toBeVisible()
+    expect(blogUrl).toBeVisible()
+    expect(blogLikes).toBeVisible()
+    expect(blogUser).toBeVisible()
+    expect(likeButton).not.toBeInTheDocument()
+    expect(removeButton).not.toBeInTheDocument()
   })
 
-  test('after clicking the button, url, likes and user are displayed',
-    async () => {
+  test('renders only like button for authenticated non-owner', () => {
+    const user = {
+      name: 'Test User2',
+      username: 'tester2'
+    }
 
-      const tester = userEvent.setup()
-      const button = screen.getByText('view')
-      await tester.click(button)
+    render(<Blog blog={blog} user={user}/>)
 
-      const blogUrl = screen.getByText('https://example.com')
-      const blogLikes = screen.getByText('likes 5', { exact: false })
-      const blogUser = screen.getByText('Test User', { exact: false })
+    const likeButton = screen.getByRole('button', { name: /like/i })
+    const removeButton = screen.queryByRole('button', { name: /remove/i })
 
-      expect(blogUrl).toBeVisible()
-      expect(blogLikes).toBeVisible()
-      expect(blogUser).toBeVisible()
-    })
+    expect(likeButton).toBeInTheDocument()
+    expect(removeButton).not.toBeInTheDocument()
+  })
 
-  test('clicking like button twice calls event handler twice',
-    async () => {
+  test('renders like and remove buttons for blog owner', () => {
+    const user = {
+      name: 'Test User',
+      username: 'tester'
+    }
 
-      const tester = userEvent.setup()
+    render(<Blog blog={blog} user={user}/>)
 
-      const viewButton = screen.getByText('view')
-      await tester.click(viewButton)
+    const likeButton = screen.getByRole('button', { name: /like/i })
+    const removeButton = screen.getByRole('button', { name: /remove/i })
 
-      const likeButton = screen.getByText('like')
-      await tester.click(likeButton)
-      await tester.click(likeButton)
-
-      expect(updateLikesMock.mock.calls).toHaveLength(2)
-    })
+    expect(likeButton).toBeInTheDocument()
+    expect(removeButton).toBeInTheDocument()
+  })
 })
