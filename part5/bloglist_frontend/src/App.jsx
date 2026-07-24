@@ -5,7 +5,7 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import { Container } from '@mui/material'
+import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material'
 import {
   Routes,
   Route,
@@ -155,10 +155,6 @@ const App = () => {
 
   const sortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes)
 
-  const padding = {
-    padding:5
-  }
-
   const match = useMatch('/blogs/:id')
   const blog = match
     ? blogs.find(blog => blog.id === match.params.id)
@@ -170,21 +166,53 @@ const App = () => {
 
   return (
     <Container>
-      <div>
-        <Link style={padding} to='/'>blogs</Link>
-        {user !== null
-          ? <Link style={padding} to='/create'>new blog</Link>
-          : null}
-        {user === null
-          ?  <Link style={padding} to='/login'>login</Link>
-          : (
-            <>
-              <span style={padding}>{user.name} logged in</span>
-              <button onClick={handleLogout}>logout</button>
-            </>
-          )
-        }
-      </div>
+      <AppBar position='static'>
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <Typography variant='h5'>
+          Blog App
+          </Typography>
+          {user && (
+            <Typography variant='body1'>
+              {user.name} logged in
+            </Typography>
+          )}
+          <Box>
+            <Button
+              color='inherit'
+              component={Link}
+              to='/'
+              sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+            >blogs</Button>
+            {user !== null
+              ? <Button
+                color='inherit'
+                component={Link}
+                to='/create'
+                sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+              >new blog</Button>
+              : null}
+            {user === null
+              ?  <Button
+                color='inherit'
+                component={Link}
+                to='/login'
+                sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+              >login</Button>
+              : <Button
+                color='inherit'
+                onClick={handleLogout}
+                sx={{ '&:hover': { bgcolor: 'rgba(191, 94, 94, 0.75)' } }}
+              >logout</Button>
+            }
+          </Box>
+        </Toolbar>
+      </AppBar>
 
       <Routes>
         <Route path='/' element={
@@ -194,7 +222,7 @@ const App = () => {
             <ul>
               {sortedBlogs.map(blog => (
                 <li key={blog.id}>
-                  <Link style={padding} to={`/blogs/${blog.id}`}>
+                  <Link to={`/blogs/${blog.id}`}>
                     {`${blog.title} by ${blog.author}`}
                   </Link>
                 </li>
