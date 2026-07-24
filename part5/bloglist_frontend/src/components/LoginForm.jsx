@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextField, Button, Box } from '@mui/material'
 
 
 const LoginForm = ({ handleLogin }) => {
@@ -25,29 +26,34 @@ const LoginForm = ({ handleLogin }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-        username
-          <input
-            type='text'
-            value={username}
-            onChange={handleUsername}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-        password
-          <input
-            type='password'
-            value={password}
-            onChange={handlePassword}
-          />
-        </label>
-      </div>
-      <button type='submit'>login</button>
-    </form>
+    <Box
+      component='form'
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 2
+      }}
+    >
+      <TextField
+        variant='filled'
+        size='small'
+        label='username'
+        type='text'
+        value={username}
+        onChange={handleUsername}
+      />
+      <TextField
+        variant='filled'
+        size='small'
+        label='password'
+        type='password'
+        value={password}
+        onChange={handlePassword}
+      />
+      <Button type='submit' variant='contained' >login</Button>
+    </Box>
   )
 }
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextField, Button, Box } from '@mui/material'
 
 const BlogForm = ({ addBlog }) => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
@@ -31,39 +32,46 @@ const BlogForm = ({ addBlog }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          title
-          <input
-            type='text'
-            value={newBlogTitle}
-            onChange={handleBlogTitle}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          author
-          <input
-            type='text'
-            value={newBlogAuthor}
-            onChange={handleBlogAuthor}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          url
-          <input
-            type='url'
-            value={newBlogUrl}
-            onChange={handleBlogUrl}
-          />
-        </label>
-      </div>
-      <button type='submit'>create</button>
-    </form>
+    <Box
+      component='form'
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 2,
+        width: '50%'
+      }}
+    >
+      <TextField
+        fullWidth
+        size='small'
+        variant='outlined'
+        label='title'
+        type='text'
+        value={newBlogTitle}
+        onChange={handleBlogTitle}
+      />
+      <TextField
+        fullWidth
+        size='small'
+        variant='outlined'
+        label='author'
+        type='text'
+        value={newBlogAuthor}
+        onChange={handleBlogAuthor}
+      />
+      <TextField
+        fullWidth
+        size='small'
+        variant='outlined'
+        label='url'
+        type='url'
+        value={newBlogUrl}
+        onChange={handleBlogUrl}
+      />
+      <Button type='submit' variant='contained' >create</Button>
+    </Box>
   )
 }
 

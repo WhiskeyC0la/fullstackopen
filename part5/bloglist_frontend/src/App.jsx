@@ -5,7 +5,7 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-
+import { Container } from '@mui/material'
 import {
   Routes,
   Route,
@@ -169,7 +169,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Container>
       <div>
         <Link style={padding} to='/'>blogs</Link>
         {user !== null
@@ -235,7 +235,7 @@ const App = () => {
         }
         />
       </Routes>
-    </div>
+    </Container>
   )
 }
 
