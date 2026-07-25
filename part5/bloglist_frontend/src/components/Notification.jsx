@@ -8,7 +8,9 @@ const Notification = ({ message, type }) => {
 
   return (
     <Alert sx={{ mt: 1, mb: 1 }}
-      severity={type}>{message}
+      severity={type}
+      data-testid='notification'
+    >{message}
     </Alert>
   )
 }

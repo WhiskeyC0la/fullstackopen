@@ -30,7 +30,7 @@ describe('Blog app', () => {
     test('fails with wrong credentials',
       async ({page}) => {
         await loginWith(page, 'jackflow', 'wrongpassword')
-        await expect(page.locator('.error')).toContainText('invalid username or password')
+        await expect(page.getByTestId('notification')).toContainText('invalid username or password')
         await expect(page.getByText('Jack Flow logged in')).not.toBeVisible()
         await expect(page).toHaveURL('/login')
     })
@@ -52,7 +52,7 @@ describe('Blog app', () => {
         await expect(page).toHaveURL('/create')
         await createBlog(page, blogTitle, blogAuthor, 'https://example.com')
         await expect(page).toHaveURL('/')
-        await expect(page.locator('.success'))
+        await expect(page.getByTestId('notification'))
           .toContainText(`a new blog "${blogTitle}" by ${blogAuthor} added`)
         await expect(page.getByRole('link', { name: `${blogTitle} by ${blogAuthor}` })).toBeVisible()
     })
@@ -68,10 +68,10 @@ describe('Blog app', () => {
       test('logged user can like the blog',
         async ({ page }) => {
           await page.getByRole('link', { name: `${blogTitle} by ${blogAuthor}` }).click()
-          await expect(page.getByText('likes 0')).toBeVisible()
+          await expect(page.getByText('0 likes')).toBeVisible()
           await page.getByRole('button', { name: 'like' }).click()
-          await expect(page.getByText('likes 1')).toBeVisible()
-          await expect(page.locator('.success'))
+          await expect(page.getByText('1 likes')).toBeVisible()
+          await expect(page.getByTestId('notification'))
             .toContainText('likes for "New blog with Playwright" by Test Author were successfully updated')
       })
 
@@ -82,7 +82,7 @@ describe('Blog app', () => {
           page.on('dialog', dialog => dialog.accept())
           await page.getByRole('button', { name: /remove/i }).click()
           await expect(page).toHaveURL('/')
-          await expect(page.locator('.success'))
+          await expect(page.getByTestId('notification'))
             .toContainText('Blog "New blog with Playwright" by Test Author was successfully removed')
           await expect(page.getByRole('link', { name: `${blogTitle} by ${blogAuthor}` })).toHaveCount(0)
       })
