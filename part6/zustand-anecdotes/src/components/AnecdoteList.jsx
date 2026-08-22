@@ -5,11 +5,10 @@ const AnecdoteList = () => {
   const anecdotes = useAnecdotes()
   const { vote, remove } = useAnecdoteActions()
   const { setNotification } = useNotificationControl()
-  const sortedAnecdotes = anecdotes.toSorted((a, b) => b.votes - a.votes)
 
   return (
     <div>
-      {sortedAnecdotes.map(anecdote => (
+      {anecdotes.map(anecdote => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
             <div>

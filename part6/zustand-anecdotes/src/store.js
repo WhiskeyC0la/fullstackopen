@@ -1,7 +1,9 @@
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+import logger from './services/logger'
 import anecdoteService from './services/anecdotes'
 
-const useAnecdoteStore = create((set, get) => ({
+const useAnecdoteStore = create(devtools(logger((set, get) => ({
   anecdotes: [],
   filter: '',
   actions: {
@@ -33,11 +35,13 @@ const useAnecdoteStore = create((set, get) => ({
       set(() => ({ anecdotes }))
     }
   }
-}))
+}))))
 
 export const useAnecdotes = () => {
-  const anecdotes = useAnecdoteStore(state => state.anecdotes)
+  const anecdotes = useAnecdoteStore(state => state.anecdotes).toSorted((a, b) => b.votes - a.votes)
   const filter = useAnecdoteStore(state => state.filter)
   return anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter))
 }
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+
+export default useAnecdoteStore
