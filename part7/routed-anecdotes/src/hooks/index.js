@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAnecdotes } from './useAnecdotes'
 
 export const useField = (type) => {
   const [ value, setValue ] = useState('')
@@ -18,3 +19,5 @@ export const useField = (type) => {
     reset
   }
 }
+
+export { useAnecdotes }
