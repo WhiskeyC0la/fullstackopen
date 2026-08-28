@@ -12,8 +12,10 @@ import {
   Link,
   Navigate,
   useNavigate,
-  useMatch
+  useMatch,
+  useLocation
 } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -22,6 +24,7 @@ const App = () => {
   const [messageType, setMessageType] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -214,55 +217,57 @@ const App = () => {
         </Toolbar>
       </AppBar>
 
-      <Routes>
-        <Route path='/' element={
-          <div>
-            <h2>blogs</h2>
-            <Notification message={message} type={messageType}/>
-            <ul>
-              {sortedBlogs.map(blog => (
-                <li key={blog.id}>
-                  <Link to={`/blogs/${blog.id}`}>
-                    {`${blog.title} by ${blog.author}`}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        }
-        />
-        <Route path='/login' element={
-          user === null
-            ? (
-              <div>
-                <h2>Log in to application</h2>
-                <Notification message={message} type={messageType} />
-                <LoginForm handleLogin={handleLogin}/>
-              </div>
-            )
-            : <Navigate to='/' replace/>
-        }
-        />
-        <Route path='/blogs/:id' element={
-          <div>
-            <Notification message={message} type={messageType} />
-            <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
-          </div>
-        }
-        />
-        <Route path='/create' element={
-          user !== null
-            ? (
-              <div>
-                <h2>create new</h2>
-                <Notification message={message} type={messageType} />
-                <BlogForm addBlog={addBlog} />
-              </div>
-            )
-            : <Navigate to='/login' replace />
-        }
-        />
-      </Routes>
+      <ErrorBoundary key={location.pathname}>
+        <Routes>
+          <Route path='/' element={
+            <div>
+              <h2>blogs</h2>
+              <Notification message={message} type={messageType}/>
+              <ul>
+                {sortedBlogs.map(blog => (
+                  <li key={blog.id} >
+                    <Link to={`/blogs/${blog.id}`}>
+                      {`${blog.title} by ${blog.author}`}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          }
+          />
+          <Route path='/login' element={
+            user === null
+              ? (
+                <div>
+                  <h2>Log in to application</h2>
+                  <Notification message={message} type={messageType} />
+                  <LoginForm handleLogin={handleLogin}/>
+                </div>
+              )
+              : <Navigate to='/' replace/>
+          }
+          />
+          <Route path='/blogs/:id' element={
+            <div>
+              <Notification message={message} type={messageType} />
+              <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
+            </div>
+          }
+          />
+          <Route path='/create' element={
+            user !== null
+              ? (
+                <div>
+                  <h2>create new</h2>
+                  <Notification message={message} type={messageType} />
+                  <BlogForm addBlog={addBlog} />
+                </div>
+              )
+              : <Navigate to='/login' replace />
+          }
+          />
+        </Routes>
+      </ErrorBoundary>
     </Container>
   )
 }
