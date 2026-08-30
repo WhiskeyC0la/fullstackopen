@@ -3,11 +3,11 @@ const Blog = require('../models/blog')
 const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response, next) => {
-  try{
+  try {
     const blogs = await Blog.find({}).populate('user', 'username name')
 
     response.json(blogs)
-  }catch(error) {
+  } catch (error) {
     next(error)
   }
 })
@@ -17,15 +17,17 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
     const body = request.body
     const user = request.user
 
-    if(!user) {
-      return response.status(400).json({ error: 'user id missing or not valid' })
+    if (!user) {
+      return response
+        .status(400)
+        .json({ error: 'user id missing or not valid' })
     }
 
     const blog = new Blog({
       title: body.title,
       author: body.author,
       url: body.url,
-      user: user._id
+      user: user._id,
     })
     const savedBlog = await blog.save()
 
@@ -43,22 +45,24 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
     const user = request.user
     const blog = await Blog.findById(request.params.id)
 
-    if(!blog) {
+    if (!blog) {
       return response.status(404).end()
     }
 
     if (!user) {
-      return response.status(400).json({ error: 'user id missing or not valid' })
+      return response
+        .status(400)
+        .json({error: 'user id missing or not valid' })
     }
 
-    if(blog.user.toString() !== user._id.toString()) {
+    if (blog.user.toString() !== user._id.toString()) {
       return response.status(403).json({ error: 'access denied' })
     }
 
     await Blog.findByIdAndDelete(request.params.id)
 
     user.blogs = user.blogs.filter(
-      blogId => blogId.toString() !== request.params.id
+      (blogId) => blogId.toString() !== request.params.id,
     )
     await user.save()
 
@@ -69,11 +73,11 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
 })
 
 blogsRouter.put('/:id', async (request, response, next) => {
-  try{
+  try {
     const { likes } = request.body
     const blogToUpdate = await Blog.findById(request.params.id)
 
-    if(!blogToUpdate) {
+    if (!blogToUpdate) {
       return response.status(404).end()
     }
 
