@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import Notification from './components/Notification'
+import { Notification } from './components/Notification'
 import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material'
 import {
   Routes,
@@ -16,16 +16,16 @@ import {
   useLocation
 } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
+import { useNotificationControl } from './NotificationStore'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [messageType, setMessageType] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [blogsDownloadingChecked, setBlogsDownloadingChecked] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const { setNotificationType, setNotification } = useNotificationControl()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -52,12 +52,11 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
       navigate('/')
+      setNotificationType('success')
+      setNotification(`${user.name} successfully logged in`)
     } catch (error) {
-      setMessageType('error')
-      setMessage(error.response?.data?.error)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      setNotificationType('error')
+      setNotification(error.response?.data?.error)
     }
   }
 
@@ -67,11 +66,8 @@ const App = () => {
     setUser(null)
     blogService.setToken(null)
     navigate('/')
-    setMessageType('success')
-    setMessage(`${name} successfully logged out`)
-    setTimeout(() => {
-      setMessage(null)
-    }, 5000)
+    setNotificationType('success')
+    setNotification(`${name} successfully logged out`)
   }
 
   const addBlog = async newBlog => {
@@ -85,24 +81,15 @@ const App = () => {
         }
         setBlogs(blogs.concat(blogWithUser))
         navigate('/')
-        setMessageType('success')
-        setMessage(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
+        setNotificationType('success')
+        setNotification(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
       } else {
-        setMessageType('error')
-        setMessage(`a blog "${newBlog.title}" by ${newBlog.author} already exists`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
+        setNotificationType('error')
+        setNotification(`a blog "${newBlog.title}" by ${newBlog.author} already exists`)
       }
     } catch (error) {
-      setMessageType('error')
-      setMessage(error.response?.data?.error || 'something went wrong')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      setNotificationType('error')
+      setNotification(error.response?.data?.error || 'something went wrong')
     }
   }
 
@@ -121,17 +108,11 @@ const App = () => {
       await blogService.update(id, blogToUpdate)
       const blogsAfterUpdate = await blogService.getAll()
       setBlogs(blogsAfterUpdate)
-      setMessageType('success')
-      setMessage(`likes for "${result.title}" by ${result.author} were successfully updated`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      setNotificationType('success')
+      setNotification(`likes for "${result.title}" by ${result.author} were successfully updated`)
     } catch (error) {
-      setMessageType('error')
-      setMessage(error.response?.data?.error || 'something went wrong')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      setNotificationType('error')
+      setNotification(error.response?.data?.error || 'something went wrong')
     }
   }
 
@@ -143,18 +124,12 @@ const App = () => {
         await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id !== id))
         navigate('/')
-        setMessageType('success')
-        setMessage(`Blog "${blogToDelete.title}" by ${blogToDelete.author} was successfully removed`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
+        setNotificationType('success')
+        setNotification(`Blog "${blogToDelete.title}" by ${blogToDelete.author} was successfully removed`)
       }
     } catch (error) {
-      setMessageType('error')
-      setMessage(error.response?.data?.error || 'something went wrong')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      setNotificationType('error')
+      setNotification(error.response?.data?.error || 'something went wrong')
     }
   }
 
@@ -224,7 +199,7 @@ const App = () => {
           <Route path='/' element={
             <div>
               <h2>blogs</h2>
-              <Notification message={message} type={messageType}/>
+              <Notification />
               <ul>
                 {sortedBlogs.map(blog => (
                   <li key={blog.id} >
@@ -242,7 +217,7 @@ const App = () => {
               ? (
                 <div>
                   <h2>Log in to application</h2>
-                  <Notification message={message} type={messageType} />
+                  <Notification />
                   <LoginForm handleLogin={handleLogin}/>
                 </div>
               )
@@ -254,7 +229,7 @@ const App = () => {
               ? <h2>Loading...</h2>
               : blog
                 ? <div>
-                  <Notification message={message} type={messageType} />
+                  <Notification />
                   <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
                 </div>
                 : <h2>404 - Page not found</h2>
@@ -265,7 +240,7 @@ const App = () => {
               ? (
                 <div>
                   <h2>create new</h2>
-                  <Notification message={message} type={messageType} />
+                  <Notification />
                   <BlogForm addBlog={addBlog} />
                 </div>
               )
