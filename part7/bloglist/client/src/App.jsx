@@ -17,22 +17,23 @@ import {
 } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationControl } from './NotificationStore'
+import { useBlogs, useBlogsControl } from './BlogsStore'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [blogsDownloadingChecked, setBlogsDownloadingChecked] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { setNotificationType, setNotification } = useNotificationControl()
+  const blogs = useBlogs()
+  const { add, vote, remove, initialize } = useBlogsControl()
 
   useEffect(() => {
-    blogService.getAll().then(blogs => {
-      setBlogs(blogs)
+    initialize().then(() => {
       setBlogsDownloadingChecked(true)
     })
-  }, [])
+  }, [initialize])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -74,15 +75,10 @@ const App = () => {
     try {
       const result = blogs.find(blog => blog.title === newBlog.title && blog.author === newBlog.author)
       if(!result) {
-        const createdBlog = await blogService.create(newBlog)
-        const blogWithUser = {
-          ...createdBlog,
-          user: user
-        }
-        setBlogs(blogs.concat(blogWithUser))
+        await add(newBlog)
         navigate('/')
         setNotificationType('success')
-        setNotification(`a new blog "${createdBlog.title}" by ${createdBlog.author} added`)
+        setNotification(`a new blog "${newBlog.title}" by ${newBlog.author} added`)
       } else {
         setNotificationType('error')
         setNotification(`a blog "${newBlog.title}" by ${newBlog.author} already exists`)
@@ -96,18 +92,7 @@ const App = () => {
   const updateLikes = async (id) => {
     try {
       const result = blogs.find(blog => blog.id === id)
-
-      const blogToUpdate = {
-        title: result.title,
-        author: result.author,
-        url: result.url,
-        likes: result.likes + 1,
-        user: result.user
-      }
-
-      await blogService.update(id, blogToUpdate)
-      const blogsAfterUpdate = await blogService.getAll()
-      setBlogs(blogsAfterUpdate)
+      await vote(id)
       setNotificationType('success')
       setNotification(`likes for "${result.title}" by ${result.author} were successfully updated`)
     } catch (error) {
@@ -121,8 +106,7 @@ const App = () => {
       const blogToDelete = blogs.find(blog => blog.id === id)
 
       if(window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}?`)) {
-        await blogService.remove(id)
-        setBlogs(blogs.filter(blog => blog.id !== id))
+        await remove(id)
         navigate('/')
         setNotificationType('success')
         setNotification(`Blog "${blogToDelete.title}" by ${blogToDelete.author} was successfully removed`)
@@ -132,8 +116,6 @@ const App = () => {
       setNotification(error.response?.data?.error || 'something went wrong')
     }
   }
-
-  const sortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes)
 
   const match = useMatch('/blogs/:id')
   const blog = match
@@ -201,7 +183,7 @@ const App = () => {
               <h2>blogs</h2>
               <Notification />
               <ul>
-                {sortedBlogs.map(blog => (
+                {blogs.map(blog => (
                   <li key={blog.id} >
                     <Link to={`/blogs/${blog.id}`}>
                       {`${blog.title} by ${blog.author}`}
