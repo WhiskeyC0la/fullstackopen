@@ -23,12 +23,14 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
+  const [blogsDownloadingChecked, setBlogsDownloadingChecked] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
       setBlogs(blogs)
+      setBlogsDownloadingChecked(true)
     })
   }, [])
 
@@ -248,10 +250,14 @@ const App = () => {
           }
           />
           <Route path='/blogs/:id' element={
-            <div>
-              <Notification message={message} type={messageType} />
-              <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
-            </div>
+            !blogsDownloadingChecked
+              ? <h2>Loading...</h2>
+              : blog
+                ? <div>
+                  <Notification message={message} type={messageType} />
+                  <Blog blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
+                </div>
+                : <h2>404 - Page not found</h2>
           }
           />
           <Route path='/create' element={
@@ -266,6 +272,11 @@ const App = () => {
               : <Navigate to='/login' replace />
           }
           />
+          <Route path='*' element={
+            <div>
+              <h2>404 - Page not found</h2>
+            </div>
+          }/>
         </Routes>
       </ErrorBoundary>
     </Container>
