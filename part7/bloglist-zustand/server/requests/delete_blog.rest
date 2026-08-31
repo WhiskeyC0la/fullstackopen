@@ -1,0 +1,11 @@
+### LOCAL BLOG DELETE
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE
+
+### LOCAL BLOG(INCORRECT BLOG ID) DELETE
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE
+
+### LOCAL BLOG(WRONG) DELETE WITH VALID TOKEN
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
+Authorization: Bearer TOKEN_HERE

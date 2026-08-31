@@ -1,0 +1,17 @@
+### LOCAL LOGIN
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username": "jackflow",
+  "password": "345-987987"
+}
+
+### LOCAL LOGIN #2
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username": "secondone",
+  "password": "confidential"
+}
