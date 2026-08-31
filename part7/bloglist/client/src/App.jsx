@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import { Notification } from './components/Notification'
@@ -18,9 +16,9 @@ import {
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationControl } from './NotificationStore'
 import { useBlogs, useBlogsControl } from './BlogsStore'
+import { useUser, useUserControl } from './UserStore'
 
 const App = () => {
-  const [user, setUser] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [blogsDownloadingChecked, setBlogsDownloadingChecked] = useState(false)
   const navigate = useNavigate()
@@ -28,6 +26,8 @@ const App = () => {
   const { setNotificationType, setNotification } = useNotificationControl()
   const blogs = useBlogs()
   const { add, vote, remove, initialize } = useBlogsControl()
+  const user = useUser()
+  const { login, logout, initializeUser } = useUserControl()
 
   useEffect(() => {
     initialize().then(() => {
@@ -36,25 +36,16 @@ const App = () => {
   }, [initialize])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if(loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
+    initializeUser()
     setAuthChecked(true)
-  }, [])
+  }, [initializeUser])
 
   const handleLogin = async credentials => {
-
-    try {
-      const user = await loginService.login(credentials)
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
+    try {  
+      const loggedUser = await login(credentials)
       navigate('/')
       setNotificationType('success')
-      setNotification(`${user.name} successfully logged in`)
+      setNotification(`${loggedUser.name} successfully logged in`)
     } catch (error) {
       setNotificationType('error')
       setNotification(error.response?.data?.error)
@@ -63,9 +54,7 @@ const App = () => {
 
   const handleLogout = () => {
     const name = user.name
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
-    blogService.setToken(null)
+    logout()
     navigate('/')
     setNotificationType('success')
     setNotification(`${name} successfully logged out`)
