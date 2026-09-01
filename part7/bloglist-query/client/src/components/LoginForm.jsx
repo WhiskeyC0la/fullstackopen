@@ -1,28 +1,19 @@
-import { useState } from 'react'
 import { TextField, Button, Box } from '@mui/material'
-
+import { useField } from '../hooks/useField'
 
 const LoginForm = ({ handleLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const { reset: usernameReset, ...username } = useField('username', 'text')
+  const { reset: passwordReset, ...password } = useField('password', 'password')
 
   const handleSubmit = async event => {
     event.preventDefault()
 
     await handleLogin({
-      username,
-      password
+      username: username.value,
+      password: password.value
     })
-    setUsername('')
-    setPassword('')
-  }
-
-  const handleUsername = event => {
-    setUsername(event.target.value)
-  }
-
-  const handlePassword = event => {
-    setPassword(event.target.value)
+    usernameReset()
+    passwordReset()
   }
 
   return (
@@ -39,18 +30,12 @@ const LoginForm = ({ handleLogin }) => {
       <TextField
         variant='filled'
         size='small'
-        label='username'
-        type='text'
-        value={username}
-        onChange={handleUsername}
+        { ...username}
       />
       <TextField
         variant='filled'
         size='small'
-        label='password'
-        type='password'
-        value={password}
-        onChange={handlePassword}
+        { ...password}
       />
       <Button type='submit' variant='contained' >login</Button>
     </Box>

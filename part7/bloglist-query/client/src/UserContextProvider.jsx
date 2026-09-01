@@ -2,28 +2,27 @@ import { useState, useCallback } from 'react'
 import { UserContext } from './UserContext.js'
 import loginService from './services/login'
 import blogService from './services/blogs'
-
+import persistentUser from './services/persistentUser.js'
 export const UserContextProvider = ({children}) => {
   const [user, setUser] = useState(null)
 
   const login = async(credentials) => {
     const user = await loginService.login(credentials)
-    window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+    persistentUser.saveUser(user)
     blogService.setToken(user.token)
     setUser(user)
     return user
   }
 
   const logout = () => {
-    window.localStorage.removeItem('loggedBlogappUser')
+    persistentUser.removeUser()
     blogService.setToken(null)
     setUser(null)
   }
 
   const initializeUser = useCallback(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if(loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+    const user = persistentUser.getUser()
+    if(user) {
       setUser(user)
       blogService.setToken(user.token)
     }
