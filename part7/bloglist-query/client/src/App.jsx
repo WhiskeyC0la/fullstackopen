@@ -9,23 +9,21 @@ import {
   Route,
   Link,
   Navigate,
-  useMatch,
   useNavigate,
   useLocation
 } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotification } from './hooks/useNotification'
-import { useBlogs } from './hooks/useBlogs'
 import { useUser } from './hooks/useUser'
 import Users from './components/Users'
 import Blogs from './components/Blogs'
+import User from './components/User'
 
 const App = () => {
   const [authChecked, setAuthChecked] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { showNotification } = useNotification()
-  const { blogs, isPending, isError } = useBlogs()
   const { user, login, logout, initializeUser } = useUser()
 
   useEffect(() => {
@@ -50,17 +48,8 @@ const App = () => {
     showNotification('success', `${name} successfully logged out`)
   }
 
-  const match = useMatch('/blogs/:id')
-  const blog = match
-    ? blogs.find(blog => blog.id === match.params.id)
-    : null
-
   if(!authChecked) {
     return null
-  }
-
-  if(isError) {
-    return <div>Blog service is not available due to problems on the server</div>
   }
 
   return (
@@ -141,15 +130,12 @@ const App = () => {
               : <Navigate to='/' replace/>
           }
           />
+          <Route path='/users/:id' element={
+            <User />
+          }
+          />
           <Route path='/blogs/:id' element={
-            isPending
-              ? <h2>Loading...</h2>
-              : blog
-                ? <div>
-                  <Notification />
-                  <Blog blog={blog} user={user} />
-                </div>
-                : <h2>404 - Page not found</h2>
+            <Blog user={user} />
           }
           />
           <Route path='/create' element={
