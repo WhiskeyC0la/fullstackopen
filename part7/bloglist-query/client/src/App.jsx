@@ -17,6 +17,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { useNotification } from './hooks/useNotification'
 import { useBlogs } from './hooks/useBlogs'
 import { useUser } from './hooks/useUser'
+import Users from './components/Users'
+import Blogs from './components/Blogs'
 
 const App = () => {
   const [authChecked, setAuthChecked] = useState(false)
@@ -86,6 +88,12 @@ const App = () => {
               to='/'
               sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
             >blogs</Button>
+            <Button
+              color='inherit'
+              component={Link}
+              to='/users'
+              sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+            >users</Button>
             {user !== null
               ? <Button
                 color='inherit'
@@ -114,22 +122,12 @@ const App = () => {
       <ErrorBoundary key={location.pathname}>
         <Routes>
           <Route path='/' element={
-            isPending
-            ? <h2>Loading...</h2>
-            : <div>
-                <h2>blogs</h2>
-                <Notification />
-                <ul>
-                  {blogs.map(blog => (
-                    <li key={blog.id} >
-                      <Link to={`/blogs/${blog.id}`}>
-                        {`${blog.title} by ${blog.author}`}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <Blogs />
           }
+          />
+          <Route path='/users' element={
+            <Users />
+          } 
           />
           <Route path='/login' element={
             user === null
