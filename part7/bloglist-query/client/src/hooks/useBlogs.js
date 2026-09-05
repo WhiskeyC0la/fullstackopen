@@ -5,7 +5,7 @@ import { useNotification } from './useNotification'
 export const useBlogs = () => {
   const queryClient = useQueryClient()
   const { showNotification } = useNotification()
-  const { getAll, create, update, remove } = blogService
+  const { getAll, create, createComment, update, remove } = blogService
 
   const result = useQuery({
     queryKey: ['blogs'],
@@ -20,6 +20,22 @@ export const useBlogs = () => {
       const blogs = queryClient.getQueryData(['blogs'])
       queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
       showNotification('success', `a new blog "${newBlog.title}" by ${newBlog.author} added`)
+    },
+    onError: (error) => {
+      showNotification('error', error.response?.data?.error || error.message || 'something went wrong')
+    }
+  })
+  
+  const createCommentMutation = useMutation({
+    mutationFn: ({ id, comment }) => createComment(id, comment),
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], 
+        blogs.map(blog => blog.id === updatedBlog.id
+        ? updatedBlog
+        : blog
+      ))
+      showNotification('success', `comment for "${updatedBlog.title}" by ${updatedBlog.author} was successfully sent`)
     },
     onError: (error) => {
       showNotification('error', error.response?.data?.error || error.message || 'something went wrong')
@@ -62,6 +78,7 @@ export const useBlogs = () => {
     isPending: result.isPending,
     isError: result.isError,
     create: (newBlog, options) => newBlogMutation.mutate(newBlog, options),
+    createComment: ({id, comment}, options) => createCommentMutation.mutate({id, comment}, options),
     vote: (blogToUpdate) => updateBlogMutation.mutate({ ...blogToUpdate, likes: blogToUpdate.likes + 1}),
     remove: (blogToDelete, options) => deleteBlogMutation.mutate(blogToDelete, options)
   }

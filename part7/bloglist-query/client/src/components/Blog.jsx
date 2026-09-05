@@ -4,7 +4,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import { useBlogs } from '../hooks/useBlogs'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { Notification } from './Notification'
-
+import CommentForm from './CommentForm'
 const Blog = ({ user }) => {
   const { blogs, isPending, isError, vote, remove } = useBlogs()
   const navigate = useNavigate()
@@ -22,7 +22,7 @@ const Blog = ({ user }) => {
 
   const match = useMatch('/blogs/:id')
   const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null
-
+  
   const deleteBlog = () => {
     
     if (
@@ -45,7 +45,7 @@ const Blog = ({ user }) => {
   if (isPending) {
     return <h2>Loading...</h2>
   }
-
+  
   return blog ? (
     <div>
       <Notification />
@@ -89,16 +89,17 @@ const Blog = ({ user }) => {
             </Button>
           )}
         </Box>
-        {blog.comments.length > 0 && (
-          <Box>
-            <Typography variant='body1'>Comments:</Typography>
+        <Box>
+          <Typography variant='body1'>Comments:</Typography>
+          <CommentForm id={blog.id}/>
+          {blog.comments.length > 0 && (
             <ul>
               {blog.comments.map((comment, index) => (
                 <li key={index}>{comment}</li>
               ))}
             </ul>
-          </Box>
-        )}
+          )}
+        </Box>
       </Box>
     </div>
   ) : (
