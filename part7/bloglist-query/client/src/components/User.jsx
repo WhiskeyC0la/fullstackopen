@@ -1,6 +1,6 @@
 import { useMatch } from 'react-router-dom'
 import { useUsers } from '../hooks/useUsers'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 const User = () => {
   const { users, isPending } = useUsers()    
@@ -21,21 +21,48 @@ const User = () => {
     : null
 
   if(isPending) {
-    return <h2>Loading...</h2>
+    return (
+      <Typography variant='h5' sx={{ mt: 3 }}>
+        Loading...
+      </Typography>
+    )
   }
 
   return (
     user
     ? <Box sx={userStyle}>
-        <h2>{user.name}</h2>
-        <h3>added blogs</h3>
-        <ul>
+        <Typography variant='h5' sx={{ mb: 2 }}>
+          {user.name}
+        </Typography>
+        <Typography
+          variant='h6'
+          sx={{ 
+            mb: 1,
+            borderBottom: 1,
+            borderColor: 'divider',
+            maxWidth: { sm: 400, md: 700 }
+          }}>
+          added blogs:
+        </Typography>
+        <Box>
           {user.blogs.map(blog => (
-            <li key={blog.id}>{blog.title}</li>
+            <Box 
+              key={blog.id}
+              sx={{
+                py: 0.8,
+                maxWidth: { sm: 400, md: 700 }
+              }}
+            >
+              <Typography variant='body1'>
+                {blog.title}
+              </Typography>
+            </Box>
           ))}
-        </ul>
+        </Box>
       </Box>
-      : <h2>404 Page not found</h2>
+      : <Typography variant='h5'>
+          404 Page not found
+        </Typography>
   )
 }
 

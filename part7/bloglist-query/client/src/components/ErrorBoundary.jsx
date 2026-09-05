@@ -1,4 +1,5 @@
 import React from 'react'
+import { Typography } from '@mui/material'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -17,9 +18,9 @@ class ErrorBoundary extends React.Component {
   render() {
     if(this.state.hasError) {
       return (
-        <div>
-          <h2>Something went wrong...</h2>
-        </div>
+        <Typography variant='h5' sx={{ mt: 3 }}>
+          Something went wrong...
+        </Typography>
       )
     }
     return this.props.children

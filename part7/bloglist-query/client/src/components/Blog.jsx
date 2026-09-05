@@ -38,12 +38,18 @@ const Blog = ({ user }) => {
 
   if (isError) {
     return (
-      <div>Blog service is not available due to problems on the server</div>
+      <Typography sx={{ mt: 3 }}>
+        Blog service is not available due to problems on the server
+      </Typography>
     )
   }
 
   if (isPending) {
-    return <h2>Loading...</h2>
+    return (
+      <Typography variant='h5' sx={{ mt: 3 }}>
+        Loading...
+      </Typography>
+    )
   }
   
   return blog ? (
@@ -90,20 +96,34 @@ const Blog = ({ user }) => {
           )}
         </Box>
         <Box>
-          <Typography variant='body1'>Comments:</Typography>
+          <Typography variant='h6' sx={{ mb: 1 }}>Comments:</Typography>
           <CommentForm id={blog.id}/>
           {blog.comments.length > 0 && (
-            <ul>
+            <Box sx={{
+              mt: 1,
+              maxWidth: { sm: 400, md: 700 }
+            }}>
               {blog.comments.map((comment, index) => (
-                <li key={index}>{comment}</li>
+                <Box
+                  key={index}
+                  sx={{
+                    py: 0.8
+                  }}
+                >
+                  <Typography variant='body2'>
+                    {comment}
+                  </Typography>
+                </Box>
               ))}
-            </ul>
+            </Box>
           )}
         </Box>
       </Box>
     </div>
   ) : (
-    <h2>404 Page not found</h2>
+    <Typography variant='h5'>
+      404 Page not found
+    </Typography>
   )
 }
 

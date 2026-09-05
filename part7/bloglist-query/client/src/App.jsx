@@ -62,12 +62,24 @@ const App = () => {
             alignItems: 'center'
           }}
         >
-          <Typography variant='h5'>
-          Blog App
+          <Typography variant='h5'
+            sx={{
+              fontSize: {
+                sm: '1rem',
+                md: '1.5rem'
+              }
+            }}
+          >Blog App
           </Typography>
           {user && (
-            <Typography variant='body1'>
-              {user.name} logged in
+            <Typography variant='body1'
+              sx={{
+                fontSize: {
+                  sm: '0.8rem',
+                  md: '1rem'
+                }
+              }}
+            >{user.name} logged in
             </Typography>
           )}
           <Box>
@@ -75,20 +87,32 @@ const App = () => {
               color='inherit'
               component={Link}
               to='/'
-              sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+              sx={{
+                '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' },
+                fontSize: { sm: '0.7rem', md: '0.875rem' },
+                px: { sm: 0.5, md: 2 }
+              }}
             >blogs</Button>
             <Button
               color='inherit'
               component={Link}
               to='/users'
-              sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+              sx={{
+                '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' },
+                fontSize: { sm: '0.7rem', md: '0.875rem' },
+                px: { sm: 0.5, md: 2 }
+              }}
             >users</Button>
             {user !== null
               ? <Button
                 color='inherit'
                 component={Link}
                 to='/create'
-                sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+                sx={{
+                  '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' },
+                  fontSize: { sm: '0.7rem', md: '0.875rem' },
+                  px: { sm: 0.5, md: 2 }
+                }}
               >new blog</Button>
               : null}
             {user === null
@@ -96,12 +120,20 @@ const App = () => {
                 color='inherit'
                 component={Link}
                 to='/login'
-                sx={{ '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' } }}
+                sx={{
+                  '&:hover': { bgcolor: 'rgba(94, 191, 191, 0.75)' },
+                  fontSize: { sm: '0.7rem', md: '0.875rem' },
+                  px: { sm: 0.5, md: 2 }
+                }}
               >login</Button>
               : <Button
                 color='inherit'
                 onClick={handleLogout}
-                sx={{ '&:hover': { bgcolor: 'rgba(191, 94, 94, 0.75)' } }}
+                sx={{
+                  '&:hover': { bgcolor: 'rgba(191, 94, 94, 0.75)' },
+                  fontSize: { sm: '0.7rem', md: '0.875rem' },
+                  px: { sm: 0.5, md: 2 }
+                }}
               >logout</Button>
             }
           </Box>
@@ -122,7 +154,9 @@ const App = () => {
             user === null
               ? (
                 <div>
-                  <h2>Log in to application</h2>
+                  <Typography variant='h5' sx={{ mt: 3, mb: 2 }}>
+                    Log in to application
+                  </Typography>
                   <Notification />
                   <LoginForm handleLogin={handleLogin}/>
                 </div>
@@ -142,7 +176,9 @@ const App = () => {
             user !== null
               ? (
                 <div>
-                  <h2>create new</h2>
+                  <Typography variant='h5' sx={{ mt: 3, mb: 2 }}>
+                    Create new blog
+                  </Typography>
                   <Notification />
                   <BlogForm />
                 </div>
@@ -150,10 +186,10 @@ const App = () => {
               : <Navigate to='/login' replace />
           }
           />
-          <Route path='*' element={
-            <div>
-              <h2>404 - Page not found</h2>
-            </div>
+          <Route path='*' element={  
+            <Typography variant='h5' sx={{ mt: 3 }}>
+              404 - Page not found
+            </Typography>
           }/>
         </Routes>
       </ErrorBoundary>

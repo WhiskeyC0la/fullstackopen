@@ -42,7 +42,8 @@ const BlogForm = () => {
         flexDirection: 'column',
         alignItems: 'flex-start',
         gap: 2,
-        width: '50%'
+        width: '100%',
+        maxWidth: { sm: 300, md:500 }
       }}
     >
       <TextField

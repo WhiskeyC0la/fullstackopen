@@ -1,31 +1,64 @@
 import { useBlogs } from '../hooks/useBlogs'
 import { Notification } from './Notification'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink} from 'react-router-dom'
+import { Box, Typography, Link } from '@mui/material'
+
 const Blogs = () => {
   const { blogs, isPending, isError } = useBlogs()
 
   if(isError) {
-    return <h2>Blog service is not available due to problems on the server</h2>
+    return (
+      <Typography sx={{ mt: 3 }}>
+        Blog service is not available due to problems on the server
+      </Typography>
+      )
   }
 
   if(isPending) {
-    return <h2>Loading...</h2>
+    return (
+      <Typography variant='h5' sx={{ mt: 3 }}>
+        Loading...
+      </Typography>
+    )
   }
 
   return (
-    <div>
-      <h2>Blogs</h2>
+    <Box
+      sx={{
+        maxWidth: 700
+      }}
+    >
+      <Typography variant='h5'
+      sx={{ mt: 3, mb: 2}}
+      >Blogs
+      </Typography>
       <Notification />
-      <ul>
         {blogs.map(blog => (
-          <li key={blog.id} >
-            <Link to={`/blogs/${blog.id}`}>
-              {`${blog.title} by ${blog.author}`}
+          <Box
+            key={blog.id}
+            sx={{
+              py: 0.8,
+              borderBottom: 1,
+              borderColor: 'divider'
+            }}
+          >
+            <Link
+              component={RouterLink}
+              to={`/blogs/${blog.id}`}
+              underline='hover'
+              variant='body1'
+            >
+              {blog.title}
             </Link>
-          </li>
+            <Typography
+              variant='body2'
+              color='text.secondary'
+            >
+              by {blog.author}
+            </Typography>
+          </Box>
         ))}
-      </ul>
-    </div>
+    </Box>
   )
 }
 

@@ -1,21 +1,31 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
+import { Box, Link, Typography, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { useUsers } from '../hooks/useUsers'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 
 const Users = () => {
   const { users, isPending, isError } = useUsers()
 
   if(isError) {
-    return <h2>User service is not available due to problems on the server</h2>
+    return (
+      <Typography sx={{ mt: 3 }}>
+        User service is not available due to problems on the server
+      </Typography>
+    )
   }
 
   if(isPending) {
-    return <h2>Loading...</h2>
+    return (
+      <Typography variant='h5' sx={{ mt: 3 }}>
+        Loading...
+      </Typography>
+    )
   }
 
   return (
-  <div>
-    <h2>Users</h2>
+  <Box>
+    <Typography variant='h5' sx={{ mt: 3, mb: 2 }}>
+      Users
+    </Typography>
     <Table>
       <TableHead>
         <TableRow>
@@ -29,7 +39,11 @@ const Users = () => {
         {users.map(user => (
           <TableRow key={user.id}>
             <TableCell>
-              <Link to={`/users/${user.id}`}>
+              <Link
+                component={RouterLink}
+                to={`/users/${user.id}`}
+                underline='hover'
+              >
                 {user.name}
               </Link>
             </TableCell>
@@ -39,7 +53,7 @@ const Users = () => {
         ))}
       </TableBody>
     </Table>
-  </div>
+  </Box>
   )
 }
 
