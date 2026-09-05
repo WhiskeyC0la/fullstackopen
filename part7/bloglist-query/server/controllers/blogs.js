@@ -42,6 +42,29 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
   }
 })
 
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  try{
+    const comment = request.body.comment
+    if(!comment || comment.trim() === '') {
+      return response
+        .status(400)
+        .json({ error: 'comment shouldn\'t be an empty string' })
+    }
+    const blog = await Blog.findById(request.params.id)
+    
+    if (!blog) {
+      return response.status(404).end()
+    }
+
+    blog.comments = blog.comments.concat(comment.trim())
+    const savedBlog = await blog.save()
+    
+    response.status(201).json(savedBlog)
+  } catch (error) {
+    next(error)
+  }
+})
+
 blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
   try {
     const user = request.user
@@ -54,7 +77,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
     if (!user) {
       return response
         .status(400)
-        .json({error: 'user id missing or not valid' })
+        .json({ error: 'user id missing or not valid' })
     }
 
     if (blog.user.toString() !== user._id.toString()) {

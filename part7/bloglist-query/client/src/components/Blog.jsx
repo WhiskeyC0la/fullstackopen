@@ -79,7 +79,7 @@ const Blog = ({ user }) => {
           )}
           {user && blog.user.username === user.username && (
             <Button
-              onClick={() => deleteBlog()}
+              onClick={deleteBlog}
               variant="outlined"
               size="small"
               color="error"
@@ -89,6 +89,16 @@ const Blog = ({ user }) => {
             </Button>
           )}
         </Box>
+        {blog.comments.length > 0 && (
+          <Box>
+            <Typography variant='body1'>Comments:</Typography>
+            <ul>
+              {blog.comments.map((comment, index) => (
+                <li key={index}>{comment}</li>
+              ))}
+            </ul>
+          </Box>
+        )}
       </Box>
     </div>
   ) : (

@@ -5,11 +5,6 @@ import { Link } from 'react-router-dom'
 const Users = () => {
   const { users, isPending, isError } = useUsers()
 
-  // const match = useMatch('/users/:id')
-  // const user = match
-  //   ? users.find(user => user.id === match.params.id)
-  //   : null
-
   if(isError) {
     return <h2>User service is not available due to problems on the server</h2>
   }
