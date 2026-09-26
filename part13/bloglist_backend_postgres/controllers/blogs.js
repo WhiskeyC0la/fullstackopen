@@ -1,10 +1,9 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response, next) => {
   try{
-    const blogs = await Blog.find({}).populate('user', 'username name')
+    const blogs = await Blog.findAll()
 
     response.json(blogs)
   }catch(error) {
@@ -12,25 +11,16 @@ blogsRouter.get('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.post('/', userExtractor, async (request, response, next) => {
+blogsRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
-    const user = request.user
 
-    if(!user) {
-      return response.status(400).json({ error: 'user id missing or not valid' })
-    }
-
-    const blog = new Blog({
+    const blog = Blog.build({
       title: body.title,
       author: body.author,
-      url: body.url,
-      user: user._id
+      url: body.url
     })
     const savedBlog = await blog.save()
-
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
 
     response.status(201).json(savedBlog)
   } catch (error) {
@@ -38,29 +28,15 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
   }
 })
 
-blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
+blogsRouter.delete('/:id', async (request, response, next) => {
   try {
-    const user = request.user
-    const blog = await Blog.findById(request.params.id)
+    const blog = await Blog.findByPk(request.params.id)
 
     if(!blog) {
       return response.status(404).end()
     }
 
-    if (!user) {
-      return response.status(400).json({ error: 'user id missing or not valid' })
-    }
-
-    if(blog.user.toString() !== user._id.toString()) {
-      return response.status(403).json({ error: 'access denied' })
-    }
-
-    await Blog.findByIdAndDelete(request.params.id)
-
-    user.blogs = user.blogs.filter(
-      blogId => blogId.toString() !== request.params.id
-    )
-    await user.save()
+    await blog.destroy()
 
     response.status(204).end()
   } catch (error) {
@@ -71,7 +47,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
 blogsRouter.put('/:id', async (request, response, next) => {
   try{
     const { likes } = request.body
-    const blogToUpdate = await Blog.findById(request.params.id)
+    const blogToUpdate = await Blog.findByPk(request.params.id)
 
     if(!blogToUpdate) {
       return response.status(404).end()

@@ -9,3 +9,6 @@ Authorization: Bearer TOKEN_HERE
 ### LOCAL BLOG(WRONG) DELETE WITH VALID TOKEN
 DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
 Authorization: Bearer TOKEN_HERE
+
+### initial for postgresdb without users
+DELETE http://localhost:3003/api/blogs/BLOGS_ID_HERE
