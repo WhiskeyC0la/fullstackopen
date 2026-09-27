@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
-const Blog = require('../models/blog')
+const { Blog } = require('../models')
+const { blogFinder } = require('../utils/middleware.js')
 
 blogsRouter.get('/', async (request, response, next) => {
   try{
@@ -28,15 +29,9 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', blogFinder, async (request, response, next) => {
   try {
-    const blog = await Blog.findByPk(request.params.id)
-
-    if(!blog) {
-      return response.status(404).end()
-    }
-
-    await blog.destroy()
+    await request.blog.destroy()
 
     response.status(204).end()
   } catch (error) {
@@ -44,18 +39,13 @@ blogsRouter.delete('/:id', async (request, response, next) => {
   }
 })
 
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', blogFinder, async (request, response, next) => {
   try{
     const { likes } = request.body
-    const blogToUpdate = await Blog.findByPk(request.params.id)
 
-    if(!blogToUpdate) {
-      return response.status(404).end()
-    }
+    request.blog.likes = likes
 
-    blogToUpdate.likes = likes
-
-    const updatedBlog = await blogToUpdate.save()
+    const updatedBlog = await request.blog.save()
     return response.status(200).json(updatedBlog)
   } catch (error) {
     next(error)

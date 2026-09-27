@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const { Blog } = require('../models')
 
 const errorHandler = (error, request, response, next) => {
-  if(error.name === 'CastError') {
-    return response.status(400).json({ error: 'malformed id' })
-  } else if(error.name === 'ValidationError') {
+  if(error.name === 'SequelizeValidationError') {
     return response.status(400).json({ error: error.message })
-  } else if(error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')) {
-    return response.status(400).json({ error: 'expected `username` to be unique' })
+  } else if(error.name === 'SequelizeDatabaseError') {
+    return response.status(400).json({ error: error.message })
+  } else if(error.name === 'SyntaxError') {
+    return response.status(400).json({ error: error.message })
   } else if(error.name === 'JsonWebTokenError') {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
@@ -38,4 +39,16 @@ const userExtractor = async (request, response, next) => {
   }
 }
 
-module.exports = { errorHandler, tokenExtractor, userExtractor }
+const blogFinder = async (request, response, next) => {
+  try {
+    request.blog = await Blog.findByPk(request.params.id)
+    if(!request.blog) {
+      return response.status(404).end()
+    }
+    next()
+  } catch(error) {
+    next(error)
+  }
+}
+
+module.exports = { errorHandler, tokenExtractor, userExtractor, blogFinder }
