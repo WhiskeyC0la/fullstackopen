@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/user')
-const { Blog } = require('../models')
+const { User, Blog } = require('../models')
 
 const errorHandler = (error, request, response, next) => {
   if(error.name === 'SequelizeValidationError') {
-    return response.status(400).json({ error: error.message })
+    const arrayOfErrorMessages = error.errors.map(errorItem => errorItem.message)
+    return response.status(400).json({ error: arrayOfErrorMessages })
   } else if(error.name === 'SequelizeDatabaseError') {
+    return response.status(400).json({ error: error.message })
+  } else if(error.name === 'SequelizeUniqueConstraintError') {
     return response.status(400).json({ error: error.message })
   } else if(error.name === 'SyntaxError') {
     return response.status(400).json({ error: error.message })
@@ -32,7 +34,10 @@ const userExtractor = async (request, response, next) => {
       return response.status(401).json({ error: 'token invalid' })
     }
 
-    request.user = await User.findById(decodedToken.id)
+    request.user = await User.findByPk(decodedToken.id)
+    if(!request.user) {
+      return response.status(401).end()
+    }
     next()
   } catch(error) {
     next(error)

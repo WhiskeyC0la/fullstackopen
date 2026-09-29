@@ -1,10 +1,16 @@
 const blogsRouter = require('express').Router()
-const { Blog } = require('../models')
-const { blogFinder } = require('../utils/middleware.js')
+const { User, Blog } = require('../models')
+const { userExtractor, blogFinder } = require('../utils/middleware.js')
 
 blogsRouter.get('/', async (request, response, next) => {
   try{
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ['userId'] },
+      include: {
+        model: User,
+        attributes: ['name']
+      }
+    })
 
     response.json(blogs)
   }catch(error) {
@@ -12,14 +18,15 @@ blogsRouter.get('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', userExtractor, async (request, response, next) => {
   try {
     const body = request.body
 
     const blog = Blog.build({
       title: body.title,
       author: body.author,
-      url: body.url
+      url: body.url,
+      userId: request.user.id
     })
     const savedBlog = await blog.save()
 
@@ -29,8 +36,11 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.delete('/:id', blogFinder, async (request, response, next) => {
+blogsRouter.delete('/:id', userExtractor, blogFinder, async (request, response, next) => {
   try {
+    if(request.blog.userId !== request.user.id) {
+      return response.status(403).end()
+    }
     await request.blog.destroy()
 
     response.status(204).end()
@@ -46,7 +56,7 @@ blogsRouter.put('/:id', blogFinder, async (request, response, next) => {
     request.blog.likes = likes
 
     const updatedBlog = await request.blog.save()
-    return response.status(200).json(updatedBlog)
+    response.status(200).json(updatedBlog)
   } catch (error) {
     next(error)
   }

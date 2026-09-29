@@ -13,11 +13,17 @@ Blog.init({
   },
   url: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isUrl: true
+    }
   },
   title: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
   likes: {
     type: DataTypes.INTEGER,
