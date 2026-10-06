@@ -18,7 +18,8 @@ Authorization: Bearer TOKEN_HERE
   "title": "Express middleware explained",
   "author": "Node Developer",
   "url": "https://expressjs.com/en/guide/using-middleware.html",
-  "likes": 21
+  "likes": 21,
+  "year": 2020
 }
 
 ### LOCAL POST #3 SECOND USER WITH TOKEN

@@ -3,7 +3,7 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "jackflow",
+    "username": "jackflow@gmail.com",
     "name": "Jack Flow",
     "password": "345-987987"
 }
@@ -13,7 +13,7 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "secondone",
+    "username": "secondone@gmail.com",
     "name": "John Doe",
     "password": "confidential"
 }
