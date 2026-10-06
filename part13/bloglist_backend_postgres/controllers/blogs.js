@@ -39,6 +39,7 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
       title: body.title,
       author: body.author,
       url: body.url,
+      year: body.year,
       userId: request.user.id
     })
     const savedBlog = await blog.save()
