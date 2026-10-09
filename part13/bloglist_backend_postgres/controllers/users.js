@@ -64,13 +64,30 @@ usersRouter.put('/:username', async (request, response, next) => {
 
 usersRouter.get('/:id', async (request, response, next) => {
   try {
+    const where = {}
+    if(request.query.read) {
+      where.read = request.query.read === 'true'
+    }
     const user = await User.findByPk(request.params.id, {
-      include: {
-        model: Blog,
-        attributes: {
-          exclude: ['userId']
+      include: [
+        {
+          model: Blog,
+          attributes: {
+            exclude: ['userId']
+          }
+        },
+        {
+          model: Blog,
+          as: 'readings',
+          attributes: {
+            exclude: ['userId']
+          },
+          through: {
+            where,
+            attributes: ['read', 'id']
+          }
         }
-      }
+      ]
     })
     if(!user) {
       return response.status(404).end()

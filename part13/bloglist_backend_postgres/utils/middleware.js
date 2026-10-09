@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { User, Blog } = require('../models')
+const { User, Blog, Session } = require('../models')
 
 const errorHandler = (error, request, response, next) => {
   if(error.name === 'SequelizeValidationError') {
@@ -34,10 +34,25 @@ const userExtractor = async (request, response, next) => {
       return response.status(401).json({ error: 'token invalid' })
     }
 
-    request.user = await User.findByPk(decodedToken.id)
-    if(!request.user) {
+    const user = await User.findByPk(decodedToken.id)
+    if(!user) {
       return response.status(401).end()
     }
+    if (user.disabled) {
+      return response.status(403).json({ error: 'account disabled' })
+    }
+
+    const session = await Session.findOne({
+      where: {
+        userId: user.id,
+        token: request.token
+      }
+    })
+    if(!session) {
+      return response.status(401).json({ error: 'session expired or invalid' })
+    }
+
+    request.user = user
     next()
   } catch(error) {
     next(error)
