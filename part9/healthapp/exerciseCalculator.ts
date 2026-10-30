@@ -1,3 +1,5 @@
+import { validateArgs } from './utils/validator.ts';
+
 interface Statistic {
   periodLength: number;
   trainingDays: number;
@@ -41,4 +43,17 @@ const calculateExercises = (hours: number[], target: number): Statistic => {
   };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+  if (process.argv.length < 4) {
+    throw new Error('Not enough arguments');
+  }
+  const args = validateArgs(process.argv);
+  console.log(calculateExercises(args.slice(1), args[0]));
+} catch (error) {
+  if (error instanceof Error) {
+    console.error(error.message);
+  } else {
+    console.error(error);
+  }
+  process.exitCode = 1;
+}
