@@ -10,7 +10,7 @@ interface Statistic {
   average: number;
 }
 
-const calculateExercises = (hours: number[], target: number): Statistic => {
+export const calculateExercises = (hours: number[], target: number): Statistic => {
   if (hours.length === 0) {
     throw new Error('Empty array is not allowed');
   }
@@ -43,17 +43,19 @@ const calculateExercises = (hours: number[], target: number): Statistic => {
   };
 };
 
-try {
-  if (process.argv.length < 4) {
-    throw new Error('Not enough arguments');
+if (process.argv[1] === import.meta.filename) {
+  try {
+    if (process.argv.length < 4) {
+      throw new Error('Not enough arguments');
+    }
+    const args = validateArgs(process.argv);
+    console.log(calculateExercises(args.slice(1), args[0]));
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error(error);
+    }
+    process.exitCode = 1;
   }
-  const args = validateArgs(process.argv);
-  console.log(calculateExercises(args.slice(1), args[0]));
-} catch (error) {
-  if (error instanceof Error) {
-    console.error(error.message);
-  } else {
-    console.error(error);
-  }
-  process.exitCode = 1;
 }

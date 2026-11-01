@@ -1,6 +1,6 @@
 import { validateArgs } from './utils/validator.ts';
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
   if (
     !Number.isFinite(height)
     || !Number.isFinite(weight)
@@ -34,20 +34,22 @@ const calculateBmi = (height: number, weight: number): string => {
   }
 };
 
-try {
-  if (process.argv.length < 4) {
-    throw new Error('Not enough arguments');
-  } else if (process.argv.length > 4) {
-    throw new Error('Too many arguments');
-  } else {
-    const args = validateArgs(process.argv);
-    console.log(calculateBmi(args[0], args[1]));
+if (process.argv[1] === import.meta.filename) {
+  try {
+    if (process.argv.length < 4) {
+      throw new Error('Not enough arguments');
+    } else if (process.argv.length > 4) {
+      throw new Error('Too many arguments');
+    } else {
+      const args = validateArgs(process.argv);
+      console.log(calculateBmi(args[0], args[1]));
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error(error);
+    }
+    process.exitCode = 1;
   }
-} catch (error) {
-  if (error instanceof Error) {
-    console.error(error.message);
-  } else {
-    console.error(error);
-  }
-  process.exitCode = 1;
 }
