@@ -1,6 +1,7 @@
 import express from 'express';
 import { addPatient, getNonSensitivePatientData } from '../services/patient.ts';
-import parseNewPatientEntry from '../utils.ts';
+import { newPatientEntrySchema } from '../types.ts';
+import { z } from 'zod';
 
 const router = express.Router();
 
@@ -11,13 +12,13 @@ router.get('/', (_request, response) => {
 
 router.post('/', (request, response) => {
   try {
-    const newEntry = parseNewPatientEntry(request.body);
+    const newEntry = newPatientEntrySchema.parse(request.body);
     const newPatient = addPatient(newEntry);
-    return response.status(201).json(newPatient);
+    return response.status(200).json(newPatient);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(error.message);
-      return response.status(400).json({ error: error.message });
+    if (error instanceof z.ZodError) {
+      console.error(error.issues);
+      return response.status(400).json({ error: error.issues });
     } else {
       console.error(error);
       return response.status(500).json({ error: 'Internal server error' });
