@@ -1,17 +1,19 @@
 import { useState } from "react";
+import { Link } from 'react-router';
 import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
 import axios from 'axios';
 
-import { PatientFormValues, Patient } from "../../types";
+import { PatientFormValues, NonSensitivePatient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
 
 import HealthRatingBar from "../HealthRatingBar";
 
 import patientService from "../../services/patients";
 
+
 interface Props {
-  patients : Patient[]
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
+  patients : NonSensitivePatient[]
+  setPatients: React.Dispatch<React.SetStateAction<NonSensitivePatient[]>>
 }
 
 const PatientListPage = ({ patients, setPatients } : Props ) => {
@@ -29,19 +31,42 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
   const submitNewPatient = async (values: PatientFormValues) => {
     try {
       const patient = await patientService.create(values);
-      setPatients(patients.concat(patient));
+      const patientStateView: NonSensitivePatient = {
+        id: patient.id,
+        name: patient.name,
+        occupation: patient.occupation,
+        gender: patient.gender,
+        dateOfBirth: patient.dateOfBirth
+      };
+      setPatients(patients.concat(patientStateView));
       setModalOpen(false);
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === "string") {
-          const message = e.response.data.replace('Something went wrong. Error: ', '');
+      setError(undefined);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const isArray = (value: unknown): value is { message: string }[] => { 
+          return Array.isArray(value)
+          && value.every(v => (typeof v === 'object' && v !== null) && 'message' in v && typeof v.message === 'string');
+        };
+        const errors: unknown = error.response?.data?.error;
+        if (isArray(errors)) {
+          console.error(errors);
+          setError(errors.map(error => error.message).join(',\n'));
+        } else if (error?.response?.data && typeof error?.response?.data === "string") {
+          const message = error.response.data.replace('Something went wrong. Error: ', '');
           console.error(message);
           setError(message);
+        } else if (typeof errors === 'string') {
+          console.error(errors);
+          setError(errors);
+        } else if (!error.response) {
+          console.error(error.message);
+          setError('Unable to connect to the server');
         } else {
-          setError("Unrecognized axios error");
+          console.error(error);
+          setError('Unable to create patient');
         }
       } else {
-        console.error("Unknown error", e);
+        console.error("Unknown error", error);
         setError("Unknown error");
       }
     }
@@ -64,9 +89,9 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.values(patients).map((patient: Patient) => (
+          {patients.map((patient: NonSensitivePatient) => (
             <TableRow key={patient.id}>
-              <TableCell>{patient.name}</TableCell>
+              <TableCell><Link to={`/${patient.id}`}>{patient.name}</Link></TableCell>
               <TableCell>{patient.gender}</TableCell>
               <TableCell>{patient.occupation}</TableCell>
               <TableCell>
