@@ -2,11 +2,15 @@ name: Patientor E2E Tests
 
 on:
   push:
-    branches: [ xmain, xmaster ]
+    branches: [ main, master ]
+    paths:
+      - 'part9/patientor/**'
+      - 'part9/patientor-tests/**'
+      - '.github/workflows/patientor-e2e-tests.yml'
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
@@ -18,38 +22,38 @@ jobs:
         node-version: '24'
 
     - name: Install patientor backend dependencies
-      working-directory: ./patientor/backend
+      working-directory: ./part9/patientor/backend
       run: npm install --legacy-peer-deps
 
     - name: Start patientor backend
-      working-directory: ./patientor/backend
+      working-directory: ./part9/patientor/backend
       run: npm start &
 
     - name: Install patientor frontend dependencies
-      working-directory: ./patientor/frontend
+      working-directory: ./part9/patientor/frontend
       run: npm install --legacy-peer-deps
 
     - name: Build patientor frontend
-      working-directory: ./patientor/frontend
+      working-directory: ./part9/patientor/frontend
       run: npm run build
 
     - name: Start patientor frontend preview
-      working-directory: ./patientor/frontend
+      working-directory: ./part9/patientor/frontend
       run: npx vite preview --port 5173 &
 
     - name: Install e2e test dependencies
-      working-directory: ./patientor-tests
+      working-directory: ./part9/patientor-tests
       run: npm install 
 
     - name: Install Playwright browsers
-      working-directory: ./patientor-tests
+      working-directory: ./part9/patientor-tests
       run: npx playwright install --with-deps chromium
 
     - name: Wait for servers to start
       run: npx wait-on http://localhost:3001/api/ping http://localhost:5173 --timeout 60000
 
     - name: Run E2E tests
-      working-directory: ./patientor-tests
+      working-directory: ./part9/patientor-tests
       run: npm test
 
     - name: Upload test report
@@ -57,5 +61,5 @@ jobs:
       if: always()
       with:
         name: playwright-report
-        path: patientor-tests/playwright-report/
+        path: part9/patientor-tests/playwright-report/
         retention-days: 30

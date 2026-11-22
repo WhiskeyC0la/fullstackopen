@@ -91,7 +91,7 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
         <TableBody>
           {patients.map((patient: NonSensitivePatient) => (
             <TableRow key={patient.id}>
-              <TableCell><Link to={`/${patient.id}`}>{patient.name}</Link></TableCell>
+              <TableCell><Link to={`/patients/${patient.id}`}>{patient.name}</Link></TableCell>
               <TableCell>{patient.gender}</TableCell>
               <TableCell>{patient.occupation}</TableCell>
               <TableCell>

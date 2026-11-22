@@ -52,12 +52,14 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
       <form onSubmit={addPatient}>
         <TextField
           label="Name"
+          size="small"
           fullWidth 
           value={name}
           onChange={({ target }) => setName(target.value)}
         />
         <TextField
           label="Social security number"
+          size="small"
           fullWidth
           value={ssn}
           onChange={({ target }) => setSsn(target.value)}
@@ -66,12 +68,14 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
           label="Date of birth"
           placeholder="YYYY-MM-DD"
           fullWidth
+          size="small"
           value={dateOfBirth}
           onChange={({ target }) => setDateOfBirth(target.value)}
         />
         <TextField
           label="Occupation"
           fullWidth
+          size="small"
           value={occupation}
           onChange={({ target }) => setOccupation(target.value)}
         />
@@ -80,6 +84,7 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
         <Select
           label="Gender"
           fullWidth
+          size="small"
           value={gender}
           onChange={onGenderChange}
         >
@@ -96,20 +101,22 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
         <Grid container justifyContent="space-between" sx={{ marginTop: 2 }}>
           <Grid size="auto">
             <Button
-              color="secondary"
+              type="submit"
               variant="contained"
-              type="button"
-              onClick={onCancel}
+              sx={{ width: 110 }}
             >
-              Cancel
+              Add
             </Button>
           </Grid>
           <Grid size="auto">
             <Button
-              type="submit"
+              type="button"
               variant="contained"
+              sx={{ width: 110 }}
+              color="secondary"
+              onClick={onCancel}
             >
-              Add
+              Cancel
             </Button>
           </Grid>
         </Grid>
